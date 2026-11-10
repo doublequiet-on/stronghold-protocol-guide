@@ -571,36 +571,36 @@ summary:hover, details[open] summary { color: var(--accent); }
 
 #operator-views { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 8px; }
 </style>
-<style>.detail-preview[data-directory-preview] {
+<style>.detail-preview[data-card-preview] {
   --stamp-tier: var(--preview-tier, var(--red));
   --stamp-ink: color-mix(in srgb, var(--stamp-tier) 27%, var(--text));
   width: min(384px, calc(100% - 16px));
   padding: 0;
   border: 1px solid var(--line);
   background: var(--paper);
+  overflow-x: hidden;
 }
-.detail-preview[data-directory-preview][data-side="right"] {
+.detail-preview[data-card-preview][data-side="right"] {
   --preview-cut: polygon(0 0, 60% 0, 74% 100%, 0 100%);
-  --preview-dx: -5px;
-  border-left-color: var(--preview-tier);
+  border-left-color: var(--stamp-tier);
 }
-.detail-preview[data-directory-preview][data-side="left"] {
+.detail-preview[data-card-preview][data-side="left"] {
   --preview-cut: polygon(26% 0, 100% 0, 100% 100%, 40% 100%);
-  --preview-dx: 5px;
-  border-right-color: var(--preview-tier);
+  border-right-color: var(--stamp-tier);
 }
-.detail-preview[data-directory-preview][data-side="below"] {
+.detail-preview[data-card-preview][data-side="below"] {
   --preview-cut: polygon(0 0, 100% 0, 100% 60%, 0 74%);
-  --preview-dy: -4px;
-  border-top-color: var(--preview-tier);
+  border-top-color: var(--stamp-tier);
 }
-.detail-preview[data-directory-preview][data-side="above"] {
+.detail-preview[data-card-preview][data-side="above"] {
   --preview-cut: polygon(0 26%, 100% 40%, 100% 100%, 0 100%);
-  --preview-dy: 4px;
-  border-bottom-color: var(--preview-tier);
+  border-bottom-color: var(--stamp-tier);
 }
-.directory-preview-sheet { padding: 12px 13px 14px; }
-.directory-preview-head { display: flex; align-items: center; gap: 12px; }
+.card-preview-sheet { padding: 12px 13px 14px; }
+.card-preview-head { display: flex; align-items: center; gap: 12px; }
+.card-preview-head .equipment-icon { width: 36px; height: 36px; flex: 0 0 36px; object-fit: contain; }
+.card-preview-sheet .preview-row { margin-top: 8px; }
+.skill-dialog { overflow-x: hidden; }
 .operator-stamp {
   position: relative;
   display: block;
@@ -654,17 +654,22 @@ summary:hover, details[open] summary { color: var(--accent); }
 .directory-preview-trait:last-child .directory-preview-caption { color: var(--stamp-ink); }
 
 @media (prefers-reduced-motion: no-preference) {
-  [data-directory-preview][data-side] .directory-preview-sheet { animation: preview-unfold 130ms cubic-bezier(.16, .74, .3, 1); }
-  .skill-dialog[open]::backdrop { animation: archive-backdrop 160ms ease-out; }
+  [data-card-preview][data-side] .card-preview-sheet { animation: preview-unfold 150ms cubic-bezier(.2, .75, .32, 1); }
+  .skill-dialog[open]::backdrop { animation: archive-backdrop 180ms ease-out; }
+  .equipment-item[open]::details-content { animation: equipment-unfold 175ms cubic-bezier(.2, .75, .32, 1); }
 }
 
 @keyframes preview-unfold {
-  from { clip-path: var(--preview-cut); transform: translate(var(--preview-dx, 0), var(--preview-dy, 0)); }
-  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0, 0); }
+  from { clip-path: var(--preview-cut); opacity: .75; }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); opacity: 1; }
 }
 @keyframes archive-backdrop {
   from { opacity: .55; }
   to { opacity: 1; }
+}
+@keyframes equipment-unfold {
+  from { clip-path: inset(0 0 100%); opacity: .7; }
+  to { clip-path: inset(0); opacity: 1; }
 }
 </style>
 </head>
@@ -2268,7 +2273,7 @@ summary:hover, details[open] summary { color: var(--accent); }
     if (previewAnchor) previewAnchor.removeAttribute('aria-describedby');
     previewAnchor = null;
     preview.hidden = true;
-    preview.removeAttribute('data-directory-preview');
+    preview.removeAttribute('data-card-preview');
     preview.removeAttribute('data-side');
     preview.style.removeProperty('--preview-tier');
   }
@@ -2295,18 +2300,18 @@ summary:hover, details[open] summary { color: var(--accent); }
     }
     preview.style.left = x + 'px';
     preview.style.top = y + 'px';
-    if (preview.hasAttribute('data-directory-preview')) {
+    if (preview.hasAttribute('data-card-preview')) {
       if (x >= rect.right) preview.dataset.side = 'right';
       else if (x + previewWidth <= rect.left) preview.dataset.side = 'left';
       else preview.dataset.side = y >= rect.bottom ? 'below' : 'above';
     }
   }
 
-  const trialArchiveLinks = '#operator-directory .operator, #ursus .stage .operator';
+  const operatorCardLinks = 'a[href^="#operator?"]:has(.portrait)';
 
   function operatorPreviewContent(card, name, entry, tier) {
-    const sheet = element('div', 'directory-preview-sheet', '');
-    const header = element('div', 'directory-preview-head', '');
+    const sheet = element('div', 'card-preview-sheet', '');
+    const header = element('div', 'card-preview-head', '');
     const art = element('div', 'operator-stamp', '');
     const identity = element('div', 'directory-preview-identity', '');
     const portrait = modeIcon(card.querySelector('.portrait').src, 48);
@@ -2359,7 +2364,7 @@ summary:hover, details[open] summary { color: var(--accent); }
     return [sheet];
   }
 
-  function bindPreview(anchor, content) {
+  function bindPreview(anchor, content, tierSource = anchor) {
     function show() {
       const withinArchive = dialog.contains(anchor);
       if (dialog.open !== withinArchive || !anchor.getClientRects().length) return;
@@ -2368,10 +2373,10 @@ summary:hover, details[open] summary { color: var(--accent); }
       if (!detail) return;
       const container = withinArchive ? dialog : document.body;
       if (preview.parentElement !== container) container.append(preview);
-      const directoryPreview = detail[0].classList.contains('directory-preview-sheet');
-      preview.toggleAttribute('data-directory-preview', directoryPreview);
-      if (directoryPreview) {
-        preview.style.setProperty('--preview-tier', getComputedStyle(anchor).getPropertyValue('--tier-color'));
+      const cardPreview = detail[0].classList.contains('card-preview-sheet');
+      preview.toggleAttribute('data-card-preview', cardPreview);
+      if (cardPreview) {
+        preview.style.setProperty('--preview-tier', getComputedStyle(tierSource).getPropertyValue('--tier-color'));
       }
       preview.replaceChildren(...detail);
       preview.scrollTop = 0;
@@ -2413,7 +2418,7 @@ summary:hover, details[open] summary { color: var(--accent); }
       const tier = 'ⅠⅡⅢⅣⅤⅥ'[entry.tier - 1] + ' 阶';
       const title = element('strong', 'preview-title', (link.dataset.operatorLabel || name) + ' · ' + tier);
       const skill = (slot) => 'S' + slot + ' ' + entry.skills[slot - 1];
-      if (link.matches(trialArchiveLinks)) {
+      if (link.matches(operatorCardLinks)) {
         return operatorPreviewContent(link, name, entry, tier);
       }
       const recommended = entry.recommendation?.slots.map(skill).join(' / ');
@@ -2437,16 +2442,21 @@ summary:hover, details[open] summary { color: var(--accent); }
   }
   function equipmentPreview(card) {
     const tier = card.querySelector('.gear-tier').textContent;
-    return [
-      element('strong', 'preview-title', card.dataset.equipment + ' · ' + tier),
+    const sheet = element('div', 'card-preview-sheet', '');
+    const header = element('div', 'card-preview-head', '');
+    const icon = modeIcon(card.querySelector('.equipment-icon').src, 36);
+    icon.className = 'equipment-icon';
+    header.append(icon, element('strong', 'directory-preview-name', card.dataset.equipment + ' · ' + tier));
+    sheet.append(header,
       ...Array.from(card.querySelectorAll('[data-grade]'), (effect) =>
         previewSection(effect.previousElementSibling.textContent, effect.textContent)),
-    ];
+    );
+    return [sheet];
   }
 
   function bindEquipmentLink(link) {
     const card = document.getElementById(link.hash.slice(1));
-    if (card?.matches('.catalog-gear')) bindPreview(link, () => equipmentPreview(card));
+    if (card?.matches('.catalog-gear')) bindPreview(link, () => equipmentPreview(card), card);
   }
 
   for (const summary of document.querySelectorAll('.equipment-item > summary')) {
@@ -2482,9 +2492,9 @@ summary:hover, details[open] summary { color: var(--accent); }
     if (!previewAnchor?.matches(':focus-visible') && !previewAnchor?.contains(event.relatedTarget)) hidePreview();
   });
   document.addEventListener('click', (event) => {
-    const opensTrialArchive = event.target.closest(trialArchiveLinks) &&
+    const opensCardArchive = event.target.closest(operatorCardLinks) &&
       !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
-    if (!preview.contains(event.target) && !opensTrialArchive) hidePreview();
+    if (!preview.contains(event.target) && !opensCardArchive) hidePreview();
   }, true);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') hidePreview();
@@ -2565,9 +2575,9 @@ summary:hover, details[open] summary { color: var(--accent); }
   }
 
   function archiveEntryPoint(card) {
-    if (!card.matches(trialArchiveLinks)) return null;
+    if (!card.matches(operatorCardLinks)) return null;
     const fromPreview = previewAnchor === card && !preview.hidden && !preview.scrollTop &&
-      preview.hasAttribute('data-directory-preview');
+      preview.hasAttribute('data-card-preview');
     const source = fromPreview ? preview : card;
     const portrait = source.querySelector(fromPreview ? '.stamp-portrait' : '.portrait');
     return {
@@ -2583,30 +2593,23 @@ summary:hover, details[open] summary { color: var(--accent); }
     if (!entryPoint || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const target = dialog.getBoundingClientRect();
-    const portrait = document.getElementById('skill-portrait').getBoundingClientRect();
     const header = dialog.querySelector('.skill-header');
     const width = Math.min(target.width, Math.max(176, entryPoint.panel.width));
     const headerHeight = header.offsetHeight;
     const panelHeight = Math.min(entryPoint.panel.height, headerHeight + 20);
     const height = Math.min(target.height, Math.max(headerHeight, panelHeight));
-    const viewport = document.documentElement;
-    // Keep the first visible piece on screen while matching the two portrait positions.
-    const left = Math.max(0, Math.min(target.left + entryPoint.portrait.left - portrait.left, viewport.clientWidth - width));
-    const top = Math.max(0, Math.min(target.top + entryPoint.portrait.top - portrait.top, viewport.clientHeight - height));
+    // Reveal from the side nearest the clicked portrait without moving the scroll container.
+    const left = Math.max(0, Math.min(entryPoint.portrait.left - target.left, target.width - width));
+    const top = Math.max(0, Math.min(entryPoint.portrait.top - target.top, target.height - height));
+    const right = left + width;
+    const bottom = top + height;
     const motion = dialog.animate([
       {
-        transform: `translate(${left - target.left}px, ${top - target.top}px)`,
-        clipPath: `polygon(0 0, ${width - 16}px 0, ${width}px ${height}px, 0 ${height}px)`,
-        easing: 'cubic-bezier(.21, .82, .35, 1)',
+        clipPath: `polygon(${left}px ${top}px, ${right - 16}px ${top}px, ${right}px ${bottom}px, ${left}px ${bottom}px)`,
+        opacity: .8,
       },
-      {
-        offset: .55,
-        transform: 'translate(0, 0)',
-        clipPath: `polygon(0 0, calc(100% - 13px) 0, 100% ${height}px, 0 ${height}px)`,
-        easing: 'cubic-bezier(.2, .6, .3, 1)',
-      },
-      { transform: 'translate(0, 0)', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' },
-    ], { duration: 220 });
+      { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: 1 },
+    ], { duration: 200, easing: 'cubic-bezier(.2, .75, .32, 1)' });
     motion.id = 'archive-entrance';
   }
 
