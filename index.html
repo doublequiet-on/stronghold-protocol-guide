@@ -571,6 +571,102 @@ summary:hover, details[open] summary { color: var(--accent); }
 
 #operator-views { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 8px; }
 </style>
+<style>.detail-preview[data-directory-preview] {
+  --stamp-tier: var(--preview-tier, var(--red));
+  --stamp-ink: color-mix(in srgb, var(--stamp-tier) 27%, var(--text));
+  width: min(384px, calc(100% - 16px));
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+.detail-preview[data-directory-preview][data-side="right"] {
+  --preview-cut: polygon(0 0, 60% 0, 74% 100%, 0 100%);
+  --preview-dx: -5px;
+  border-left-color: var(--preview-tier);
+}
+.detail-preview[data-directory-preview][data-side="left"] {
+  --preview-cut: polygon(26% 0, 100% 0, 100% 100%, 40% 100%);
+  --preview-dx: 5px;
+  border-right-color: var(--preview-tier);
+}
+.detail-preview[data-directory-preview][data-side="below"] {
+  --preview-cut: polygon(0 0, 100% 0, 100% 60%, 0 74%);
+  --preview-dy: -4px;
+  border-top-color: var(--preview-tier);
+}
+.detail-preview[data-directory-preview][data-side="above"] {
+  --preview-cut: polygon(0 26%, 100% 40%, 100% 100%, 0 100%);
+  --preview-dy: 4px;
+  border-bottom-color: var(--preview-tier);
+}
+.directory-preview-sheet { padding: 12px 13px 14px; }
+.directory-preview-head { display: flex; align-items: center; gap: 12px; }
+.operator-stamp {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  padding: 5px 5px 3px 8px;
+  border-bottom: 2px solid var(--stamp-tier);
+  background: linear-gradient(143deg, color-mix(in srgb, var(--stamp-tier) 25%, var(--panel)) 0 46%, var(--panel) 47%);
+}
+.stamp-portrait {
+  display: block;
+  object-fit: contain;
+  background: var(--panel);
+}
+.stamp-tier { position: absolute; left: -2px; top: -2px; object-fit: contain; }
+.directory-preview-identity { min-width: 0; }
+.directory-preview-name {
+  display: block;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+}
+.directory-preview-role { color: var(--soft); font-size: 12px; }
+.directory-preview-bonds, .directory-preview-bonds > span {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 9px;
+}
+.directory-preview-bonds { margin-top: 3px; color: var(--gold); font-size: 12px; }
+.directory-preview-bonds > span { flex-wrap: nowrap; gap: 4px; }
+.directory-preview-caption { color: var(--quiet); font-size: 12px; font-weight: 650; }
+.directory-preview-skills { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 10px 0 10px; }
+.directory-preview-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 9px 3px 5px;
+  background: var(--panel);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+  color: var(--text);
+}
+.directory-preview-skill img { flex-shrink: 0; }
+.directory-preview-slot { color: var(--red); font: 700 11px var(--mono); }
+.directory-preview-skill-name { font-weight: 650; overflow-wrap: anywhere; }
+.directory-preview-traits { display: grid; gap: 8px; }
+.directory-preview-trait p { margin: 2px 0 0; color: var(--soft); font-size: 14px; line-height: 1.65; }
+.directory-preview-trait:last-child { border-left: 2px solid var(--preview-tier, var(--red)); padding-left: 8px; }
+.directory-preview-trait:last-child .directory-preview-caption { color: var(--stamp-ink); }
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-directory-preview][data-side] .directory-preview-sheet { animation: preview-unfold 130ms cubic-bezier(.16, .74, .3, 1); }
+  .skill-dialog[open]::backdrop { animation: archive-backdrop 160ms ease-out; }
+}
+
+@keyframes preview-unfold {
+  from { clip-path: var(--preview-cut); transform: translate(var(--preview-dx, 0), var(--preview-dy, 0)); }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0, 0); }
+}
+@keyframes archive-backdrop {
+  from { opacity: .55; }
+  to { opacity: 1; }
+}
+</style>
 </head>
 <body id="top">
 <a class="skip" href="#guide">跳到阵营攻略</a>
@@ -2172,6 +2268,9 @@ summary:hover, details[open] summary { color: var(--accent); }
     if (previewAnchor) previewAnchor.removeAttribute('aria-describedby');
     previewAnchor = null;
     preview.hidden = true;
+    preview.removeAttribute('data-directory-preview');
+    preview.removeAttribute('data-side');
+    preview.style.removeProperty('--preview-tier');
   }
 
   function positionPreview(anchor) {
@@ -2196,6 +2295,68 @@ summary:hover, details[open] summary { color: var(--accent); }
     }
     preview.style.left = x + 'px';
     preview.style.top = y + 'px';
+    if (preview.hasAttribute('data-directory-preview')) {
+      if (x >= rect.right) preview.dataset.side = 'right';
+      else if (x + previewWidth <= rect.left) preview.dataset.side = 'left';
+      else preview.dataset.side = y >= rect.bottom ? 'below' : 'above';
+    }
+  }
+
+  const trialArchiveLinks = '#operator-directory .operator, #ursus .stage .operator';
+
+  function operatorPreviewContent(card, name, entry, tier) {
+    const sheet = element('div', 'directory-preview-sheet', '');
+    const header = element('div', 'directory-preview-head', '');
+    const art = element('div', 'operator-stamp', '');
+    const identity = element('div', 'directory-preview-identity', '');
+    const portrait = modeIcon(card.querySelector('.portrait').src, 48);
+    portrait.className = 'stamp-portrait';
+    const tierIcon = modeIcon(mode.tierIcons[entry.tier], 21);
+    tierIcon.className = 'stamp-tier';
+    tierIcon.alt = tier;
+    art.append(portrait, tierIcon);
+
+    const bonds = element('span', 'directory-preview-bonds', '');
+    for (const bond of entry.bonds) {
+      const badge = element('span', '', bond);
+      badge.prepend(modeIcon(mode.core[bond] ?? mode.extra[bond], 15));
+      bonds.append(badge);
+    }
+    identity.append(
+      element('strong', 'directory-preview-name', card.dataset.operatorLabel || name),
+      element('span', 'directory-preview-role', card.dataset.operatorRole),
+      element('span', 'sr-only', '盟约'),
+      bonds,
+    );
+    header.append(art, identity);
+
+    const skills = element('div', 'directory-preview-skills', '');
+    const recommended = entry.recommendation?.slots;
+    const slots = recommended?.length ? recommended : [entry.default];
+    skills.append(element('span', 'directory-preview-caption', recommended?.length ? '推荐技能' : '系统配置技能'));
+    for (const slot of slots) {
+      const skillName = entry.skills[slot - 1];
+      const skill = element('span', 'directory-preview-skill', '');
+      const icon = mode.skillIcons[skillName];
+      if (icon) skill.append(modeIcon(icon, 23));
+      skill.append(
+        element('span', 'directory-preview-slot', 'S' + slot),
+        element('strong', 'directory-preview-skill-name', skillName),
+      );
+      skills.append(skill);
+    }
+
+    const traits = element('div', 'directory-preview-traits', '');
+    for (const [index, effect] of entry.ranks.entries()) {
+      const trait = element('div', 'directory-preview-trait', '');
+      trait.append(
+        element('strong', 'directory-preview-caption', index === 0 ? '初始特质' : '精锐特质'),
+        element('p', 'game-copy', effect),
+      );
+      traits.append(trait);
+    }
+    sheet.append(header, skills, traits);
+    return [sheet];
   }
 
   function bindPreview(anchor, content) {
@@ -2207,6 +2368,11 @@ summary:hover, details[open] summary { color: var(--accent); }
       if (!detail) return;
       const container = withinArchive ? dialog : document.body;
       if (preview.parentElement !== container) container.append(preview);
+      const directoryPreview = detail[0].classList.contains('directory-preview-sheet');
+      preview.toggleAttribute('data-directory-preview', directoryPreview);
+      if (directoryPreview) {
+        preview.style.setProperty('--preview-tier', getComputedStyle(anchor).getPropertyValue('--tier-color'));
+      }
       preview.replaceChildren(...detail);
       preview.scrollTop = 0;
       previewAnchor = anchor;
@@ -2247,6 +2413,9 @@ summary:hover, details[open] summary { color: var(--accent); }
       const tier = 'ⅠⅡⅢⅣⅤⅥ'[entry.tier - 1] + ' 阶';
       const title = element('strong', 'preview-title', (link.dataset.operatorLabel || name) + ' · ' + tier);
       const skill = (slot) => 'S' + slot + ' ' + entry.skills[slot - 1];
+      if (link.matches(trialArchiveLinks)) {
+        return operatorPreviewContent(link, name, entry, tier);
+      }
       const recommended = entry.recommendation?.slots.map(skill).join(' / ');
       return [
         title,
@@ -2313,7 +2482,9 @@ summary:hover, details[open] summary { color: var(--accent); }
     if (!previewAnchor?.matches(':focus-visible') && !previewAnchor?.contains(event.relatedTarget)) hidePreview();
   });
   document.addEventListener('click', (event) => {
-    if (!preview.contains(event.target)) hidePreview();
+    const opensTrialArchive = event.target.closest(trialArchiveLinks) &&
+      !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
+    if (!preview.contains(event.target) && !opensTrialArchive) hidePreview();
   }, true);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') hidePreview();
@@ -2393,7 +2564,53 @@ summary:hover, details[open] summary { color: var(--accent); }
     }));
   }
 
-  function openArchive(link) {
+  function archiveEntryPoint(card) {
+    if (!card.matches(trialArchiveLinks)) return null;
+    const fromPreview = previewAnchor === card && !preview.hidden && !preview.scrollTop &&
+      preview.hasAttribute('data-directory-preview');
+    const source = fromPreview ? preview : card;
+    const portrait = source.querySelector(fromPreview ? '.stamp-portrait' : '.portrait');
+    return {
+      panel: source.getBoundingClientRect(),
+      portrait: portrait.getBoundingClientRect(),
+    };
+  }
+
+  function playArchiveEntrance(entryPoint) {
+    for (const animation of dialog.getAnimations()) {
+      if (animation.id === 'archive-entrance') animation.cancel();
+    }
+    if (!entryPoint || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const target = dialog.getBoundingClientRect();
+    const portrait = document.getElementById('skill-portrait').getBoundingClientRect();
+    const header = dialog.querySelector('.skill-header');
+    const width = Math.min(target.width, Math.max(176, entryPoint.panel.width));
+    const headerHeight = header.offsetHeight;
+    const panelHeight = Math.min(entryPoint.panel.height, headerHeight + 20);
+    const height = Math.min(target.height, Math.max(headerHeight, panelHeight));
+    const viewport = document.documentElement;
+    // Keep the first visible piece on screen while matching the two portrait positions.
+    const left = Math.max(0, Math.min(target.left + entryPoint.portrait.left - portrait.left, viewport.clientWidth - width));
+    const top = Math.max(0, Math.min(target.top + entryPoint.portrait.top - portrait.top, viewport.clientHeight - height));
+    const motion = dialog.animate([
+      {
+        transform: `translate(${left - target.left}px, ${top - target.top}px)`,
+        clipPath: `polygon(0 0, ${width - 16}px 0, ${width}px ${height}px, 0 ${height}px)`,
+        easing: 'cubic-bezier(.21, .82, .35, 1)',
+      },
+      {
+        offset: .55,
+        transform: 'translate(0, 0)',
+        clipPath: `polygon(0 0, calc(100% - 13px) 0, 100% ${height}px, 0 ${height}px)`,
+        easing: 'cubic-bezier(.2, .6, .3, 1)',
+      },
+      { transform: 'translate(0, 0)', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' },
+    ], { duration: 220 });
+    motion.id = 'archive-entrance';
+  }
+
+  function openArchive(link, entryPoint) {
     hidePreview();
     document.getElementById('skill-title').textContent = link.dataset.operatorLabel;
     const entry = mode.operators[link.dataset.operator];
@@ -2417,17 +2634,19 @@ summary:hover, details[open] summary { color: var(--accent); }
     copyStatus.textContent = '';
     archiveUrl.hidden = true;
     archiveUrl.value = new URL(link.hash, location.href).href;
-    if (!dialog.open) dialog.showModal();
+    const opening = !dialog.open;
+    if (opening) dialog.showModal();
     dialog.scrollTop = 0;
+    if (opening) playArchiveEntrance(entryPoint);
   }
 
-  function syncRoute(previousHash = '') {
+  function syncRoute(previousHash = '', entryPoint) {
     hidePreview();
     if (sectionHash() === '#operator') {
       const name = new URLSearchParams(location.hash.split('?')[1]).get('name');
       const link = directoryLinks.get(name);
       if (link) {
-        openArchive(link);
+        openArchive(link, entryPoint);
         highlightIndex();
         return;
       }
@@ -2534,9 +2753,10 @@ summary:hover, details[open] summary { color: var(--accent); }
       return;
     }
     event.preventDefault();
+    const entryPoint = archiveEntryPoint(link);
     archiveReturn = { link, hash: location.hash, top: scrollY };
     history.pushState({ fromGuide: true }, '', link.hash);
-    syncRoute();
+    syncRoute('', entryPoint);
   });
   window.addEventListener('hashchange', (event) => syncRoute(sectionHash(new URL(event.oldURL).hash)));
   syncRoute();
