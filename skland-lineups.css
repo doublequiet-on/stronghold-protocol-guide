@@ -37,37 +37,15 @@
 #skland-lineups { --library-station: var(--red); }
 .skland-list-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin: 15px 0 8px; }
 .skland-list-title { margin: 0; font-size: 17px; color: var(--cream); }
+.round-result-links { display: flex; flex-wrap: wrap; gap: 0 14px; }
 .skland-results-link { display: inline-flex; align-items: center; min-height: 36px; font-size: 13px; }
-#skland-plan > summary {
+#round-operators > summary {
   display: flex; align-items: center; flex-wrap: wrap; gap: 3px 8px; min-height: 40px; list-style: none;
 }
-#skland-plan > summary::-webkit-details-marker { display: none; }
-#skland-plan > summary::before { content: "▸"; color: var(--signal); }
-#skland-plan[open] > summary::before { content: "▾"; }
-#skland-plan-count { font-size: 12px; }
-#skland-plan-origin { margin: 0 0 7px; overflow-wrap: anywhere; }
-#skland-plan-origin a { white-space: normal; }
-.skland-plan-members { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; padding: 0; margin: 0; list-style: none; }
-.skland-plan-member {
-  display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 6px;
-  min-width: 0; padding: 5px; border: 1px solid var(--line); background: var(--panel);
-}
-.skland-plan-member[data-banned="true"] { border-inline-start-color: var(--red); background: var(--skland-danger-surface); }
-.skland-plan-member.is-replacing { border-color: var(--signal); }
-.skland-plan-member .skland-op-tile { width: 42px; }
-.skland-plan-member-info { display: grid; gap: 2px; overflow-wrap: anywhere; }
-.skland-plan-member-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 3px; }
-.skland-plan-member-actions button { min-height: 34px; padding: 3px 6px; font-size: 12px; }
-#skland-plan-form { margin: 7px 0 0; }
-#skland-plan-search {
-  flex: 1 1 110px; min-width: 0; min-height: 39px; padding: 4px 8px;
-  border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit;
-}
-.skland-stage-actions { display: flex; align-items: flex-start; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; margin-bottom: 9px; }
-.skland-stage-actions .skland-stages { margin: 0; }
-.skland-use-stage { min-height: 34px; border-color: var(--red); background: var(--skland-title-tint); }
-.skland-use-stage:hover:not(:disabled) { background: var(--skland-hover-tint); }
-.skland-use-stage:disabled { opacity: .5; cursor: default; }
+#round-operators > summary::-webkit-details-marker { display: none; }
+#round-operators > summary::before { content: "▸"; color: var(--signal); }
+#round-operators[open] > summary::before { content: "▾"; }
+#round-available-count { font-size: 12px; }
 .skland-source, .skland-round-options { display: flex; flex-wrap: wrap; gap: 6px; }
 .skland-round-bar {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px;
@@ -258,7 +236,7 @@ button.skland-config-item:is(:hover, :focus-visible, [aria-expanded="true"]) { b
   border-bottom: 2px solid var(--tier-color); background: var(--paper);
 }
 .operator-directory-card:is(:hover, :focus-within) { border-color: var(--signal); background: var(--theme-hover, var(--panel)); }
-#operators .operator-directory-card > .operator {
+:is(#operators, #round-operators) .operator-directory-card > .operator {
   position: static; isolation: auto; flex: none; border: 0; background: transparent; padding-block-end: 0;
 }
 .operator-directory-card > .operator::after { content: ""; position: absolute; inset: 0; }
@@ -269,11 +247,9 @@ button.skland-config-item:is(:hover, :focus-visible, [aria-expanded="true"]) { b
 }
 .operator-directory-info .operator-bonds { padding-top: 3px; justify-content: center; flex-wrap: wrap; }
 .team-tier-list .operator-directory-info { padding-bottom: 5px; }
-.skland-plan-member .skland-configuration { justify-content: flex-start; margin-top: 1px; }
 .skland-member[data-banned="true"] { border-inline-start-color: var(--red); background: var(--skland-danger-surface); }
 .skland-member .skland-ban { display: block; margin-top: 2px; }
-.skland-member[data-banned="true"] .skland-ban,
-.skland-plan-member[data-banned="true"] .skland-ban { color: var(--skland-danger-ink); }
+.skland-member[data-banned="true"] .skland-ban { color: var(--skland-danger-ink); }
 .skland-config, .skland-round-summary { color: var(--quiet); font-size: 12px; }
 .skland-round-summary a { margin-inline-start: 8px; }
 .skland-ban { color: var(--signal); font-size: 12px; }
@@ -317,7 +293,7 @@ button.skland-config-item:is(:hover, :focus-visible, [aria-expanded="true"]) { b
 .skland-bond-roster .skland-op-tile { width: 37px; }
 .skland-bond-roster .skland-tier { width: 15px; height: 15px; }
 @media (prefers-reduced-motion: no-preference) {
-  #skland-plan[open]::details-content, #team-ban-panel[open]::details-content {
+  :is(#team-ban-panel, #round-operators)[open]::details-content {
     animation: skland-disclosure-in 150ms var(--skland-ease);
   }
   .skland-card { transition: border-color 160ms var(--skland-ease); }
@@ -336,8 +312,6 @@ button.skland-config-item:is(:hover, :focus-visible, [aria-expanded="true"]) { b
   .section-dock a[href="#skland-lineups"] { grid-column: 1 / -1; }
   .skland-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .skland-search { grid-column: 1 / -1; }
-  .skland-plan-members { grid-template-columns: minmax(0, 1fr); }
-  .skland-plan-member-actions button, .skland-use-stage { min-height: 40px; }
   .skland-actions button, .skland-stages button, .skland-source button, .skland-filters button,
   .skland-feed-actions button, .skland-round-options button, .skland-extra-chip, #skland-extra-menu > summary { min-height: 44px; }
   .skland-stage-row { grid-template-columns: minmax(0, 1fr); gap: 0; }

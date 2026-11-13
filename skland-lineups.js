@@ -1,20 +1,8 @@
 /* Online results and the bundled snapshot use the same card and desktop export. */
-window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryLinks, teamNames, operatorPreviewContent, previewUI, savedPlan, onPlanChange, beforePreviewOpen }) {
+window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryLinks, operatorPreviewContent, previewUI, beforePreviewOpen }) {
   const feed = window.strongholdSklandFeed;
   const list = document.getElementById('skland-list');
   const detail = document.getElementById('skland-detail');
-  const planPanel = document.getElementById('skland-plan');
-  const planCount = document.getElementById('skland-plan-count');
-  const planOrigin = document.getElementById('skland-plan-origin');
-  const planMembers = document.getElementById('skland-plan-members');
-  const planForm = document.getElementById('skland-plan-form');
-  const planSearch = document.getElementById('skland-plan-search');
-  const planPick = document.getElementById('skland-plan-pick');
-  const planAdd = document.getElementById('skland-plan-add');
-  const planCancel = document.getElementById('skland-plan-cancel');
-  const planExport = document.getElementById('skland-plan-export');
-  const planExportStatus = document.getElementById('skland-plan-export-status');
-  const planExportText = document.getElementById('skland-plan-export-text');
   const cards = document.getElementById('skland-cards');
   const roundFilter = document.getElementById('skland-round-filter');
   const banMatches = document.getElementById('skland-ban-matches');
@@ -86,14 +74,9 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
   const art = window.createSklandArt({
     mode, directoryLinks, linkTo, blockReason, isBanned, make, memberBanText, operatorPreviewContent, previewUI, beforePreviewOpen,
   });
-  const emptyPlan = () => ({ origin: null, members: [] });
-  let plan = Array.isArray(savedPlan?.members) && savedPlan.members.every(member => typeof member?.name === 'string' && member.name)
-    ? savedPlan : emptyPlan();
-  let replaceIndex = null;
   let roundDiy = new Set();
   const needsDiy = name => !Object.hasOwn(mode.operators, name) &&
     Object.hasOwn(mode.diyCandidates, name) && !roundDiy.has(name);
-  let planCandidates = [];
 
   function memberBanText({ affiliations, reason, hits }) {
     return [reason ? reason.text : hits.length ? '仍可选' : '',
@@ -107,148 +90,6 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
     if (unknown) labels.push(unknown + ' 名干员待核对');
     return labels;
   }
-
-  function updatePlanAction(button) {
-    if (button) button.textContent = plan.members.length ? '用此阶段替换本局名单' : '带入本局名单';
-  }
-
-  function renderPlanPicker() {
-    const previous = planPick.value;
-    const query = planSearch.value.trim().toLocaleLowerCase();
-    const candidates = planCandidates.filter(name => name.toLocaleLowerCase().includes(query));
-    const placeholder = candidates.length ? '选择本局可选干员' : query ? '没有匹配干员' : '暂无其他可选干员';
-    planPick.replaceChildren(new Option(placeholder, ''));
-    for (const name of candidates) planPick.add(new Option(name, name));
-    planPick.value = candidates.includes(previous) ? previous : '';
-    planPick.disabled = candidates.length === 0;
-    planAdd.disabled = !planPick.value;
-    planAdd.textContent = replaceIndex === null ? '加入名单' : '确认替换 ' + plan.members[replaceIndex].name;
-    planCancel.hidden = replaceIndex === null;
-  }
-
-  function renderPlan() {
-    art.close();
-    planExport.hidden = !plan.members.length;
-    planExportStatus.textContent = '';
-    planExportText.hidden = true;
-    const occupied = new Set(plan.members.map(member => member.name));
-    planCandidates = [...new Set([...teamNames, ...roundDiy])]
-      .filter(name => !occupied.has(name) && !art.eligibility(name).reason)
-      .sort((a, b) => a.localeCompare(b, 'zh-CN'));
-    renderPlanPicker();
-    const { origin } = plan;
-    if (/^skland-\d{1,24}$/.test(origin?.id) && typeof origin.name === 'string' && typeof origin.stage === 'string') {
-      planOrigin.replaceChildren('来自 ', linkTo('#' + origin.id, origin.name), ' · ' + origin.stage);
-    } else {
-      planOrigin.textContent = plan.members.length ? '手动配队' : '从森空岛详情带入一个阶段，或直接选择本局可选干员。';
-    }
-    let blocked = 0;
-    let check = 0;
-    planMembers.replaceChildren(...plan.members.map((member, index) => {
-      const row = make('li', 'skland-plan-member');
-      const tile = art.portrait(member);
-      const eligibility = art.eligibility(member.name);
-      const missingDiy = needsDiy(member.name);
-      const notes = [memberBanText(eligibility), missingDiy ? '尚未加入本局自选' : ''].filter(Boolean);
-      if (eligibility.reason) blocked++;
-      else if (missingDiy || !eligibility.affiliations) check++;
-      row.dataset.banned = Boolean(eligibility.reason);
-      row.classList.toggle('is-replacing', index === replaceIndex);
-      const info = make('div', 'skland-plan-member-info');
-      info.append(make('strong', 'skland-tile-name', member.name));
-      const rank = member.mergeLevel === 1 ? '精锐' : member.mergeLevel === 0 ? '初始' : '';
-      if (rank) info.append(make('span', 'skland-config', rank));
-      const config = art.configuration(member);
-      if (config.childElementCount) info.append(config);
-      if (notes.length) info.append(make('span', 'skland-ban', notes.join(' · ')));
-      const actions = make('div', 'skland-plan-member-actions');
-      const swap = make('button', 'secondary', '换人');
-      swap.type = 'button';
-      swap.disabled = planCandidates.length === 0;
-      swap.setAttribute('aria-label', '替换 ' + member.name);
-      swap.addEventListener('click', () => {
-        replaceIndex = index;
-        planSearch.value = '';
-        planPick.value = '';
-        renderPlan();
-        planSearch.focus();
-      });
-      const remove = make('button', 'secondary', '移除');
-      remove.type = 'button';
-      remove.setAttribute('aria-label', '从本局名单移除 ' + member.name);
-      remove.addEventListener('click', () => {
-        plan.members.splice(index, 1);
-        replaceIndex = null;
-        savePlan();
-        (planMembers.children[index]?.querySelector('button:last-child') ?? planPanel.querySelector('summary')).focus();
-      });
-      actions.append(swap, remove);
-      row.append(tile, info, actions);
-      return row;
-    }));
-    planCount.textContent = [plan.members.length + ' 名干员', blocked ? blocked + ' 名已 Ban' : '', check ? check + ' 名待核对' : '']
-      .filter(Boolean).join(' · ');
-    updatePlanAction(detail.querySelector('.skland-use-stage'));
-  }
-
-  function savePlan() {
-    renderPlan();
-    onPlanChange();
-  }
-
-  planPanel.hidden = false;
-  planPanel.open = plan.members.length > 0;
-  function exportPlanJson() {
-    return JSON.stringify({
-      name: plan.origin ? '本局名单 · ' + plan.origin.name + ' · ' + plan.origin.stage : '本局名单',
-      slots: plan.members.map(member => ({
-        operatorName: member.name,
-        mergeLevel: member.mergeLevel,
-        skill: member.skill,
-        module: member.module,
-      })),
-    }, null, 2);
-  }
-
-  document.getElementById('skland-plan-copy').addEventListener('click', async () => {
-    const json = exportPlanJson();
-    try {
-      await navigator.clipboard.writeText(json);
-      planExportStatus.textContent = '已复制，可粘贴到助手「阵容 → 导入」。';
-    } catch {
-      planExportText.value = json;
-      planExportText.hidden = false;
-      planExportText.focus();
-      planExportText.select();
-      planExportStatus.textContent = '已选中 JSON，复制后粘贴到助手。';
-    }
-  });
-  document.getElementById('skland-plan-download').addEventListener('click', event => {
-    const url = URL.createObjectURL(new Blob([exportPlanJson()], { type: 'application/json' }));
-    event.currentTarget.href = url;
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
-  });
-  planSearch.addEventListener('input', renderPlanPicker);
-  planPick.addEventListener('change', () => { planAdd.disabled = !planPick.value; });
-  planCancel.addEventListener('click', () => {
-    replaceIndex = null;
-    planSearch.value = '';
-    planPick.value = '';
-    renderPlan();
-    planPick.focus();
-  });
-  planForm.addEventListener('submit', event => {
-    event.preventDefault();
-    const name = planPick.value;
-    if (!name) return;
-    if (replaceIndex === null) plan.members.push({ name });
-    else plan.members[replaceIndex] = { name };
-    replaceIndex = null;
-    planSearch.value = '';
-    planPick.value = '';
-    savePlan();
-    planPick.focus();
-  });
 
   function links(parent, label, entries, makeLink) {
     if (!entries.length) return;
@@ -413,27 +254,10 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
     header.append(detailBans);
 
     const frame = make('div', 'skland-detail-stages');
-    const stageActions = make('div', 'skland-stage-actions');
     const stagePicker = make('div', 'skland-stages');
     stagePicker.setAttribute('role', 'group');
     stagePicker.setAttribute('aria-label', '阵容阶段');
-    const useStage = make('button', 'skland-use-stage secondary');
-    useStage.type = 'button';
-    let selectedStage;
     let selectedPanel;
-    useStage.addEventListener('click', () => {
-      plan = {
-        origin: { id: lineup.id, name: lineup.name, stage: stageLabel(selectedStage) },
-        members: [...selectedStage.members],
-      };
-      replaceIndex = null;
-      planSearch.value = '';
-      planPick.value = '';
-      savePlan();
-      planPanel.open = true;
-      planPanel.querySelector('summary').focus({ preventScroll: true });
-      planPanel.scrollIntoView({ block: 'start', behavior: 'instant' });
-    });
     const stageViews = s.stages.map((stage, index) => {
       const button = make('button', '', stageLabel(stage));
       button.type = 'button';
@@ -474,7 +298,7 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
         panel.append(notes);
       }
       button.addEventListener('click', () => select(panel, true));
-      return { button, panel, memberRows, chips, stage, stageBans };
+      return { button, panel, memberRows, chips, stageBans };
     });
 
     function select(panel, animate = false) {
@@ -486,17 +310,13 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
         const selected = view.panel === panel;
         view.panel.hidden = !selected;
         view.button.setAttribute('aria-pressed', String(selected));
-        if (selected) selectedStage = view.stage;
       }
-      useStage.disabled = selectedStage.members.length === 0;
-      updatePlanAction(useStage);
       if (animate) {
         stopReveal(root);
         reveal(panel, 'stage-entrance', 150);
       }
     }
-    stageActions.append(stagePicker, useStage);
-    frame.append(stageActions, ...stageViews.map(stage => stage.panel));
+    frame.append(stagePicker, ...stageViews.map(stage => stage.panel));
     select(stageViews[s.stages.findIndex(stage => stage.tabType === 1)]?.panel ?? stageViews[0].panel);
     root.append(header, frame);
 
@@ -601,7 +421,7 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
     if (!banEmpty.hidden) {
       banEmpty.textContent = cursor?.next != null
         ? '已加载的阵容暂无无冲突结果。可以继续加载，或查看全部阵容。'
-        : '当前结果暂无无冲突阵容。可以查看全部，带入后手动换人。';
+        : '当前结果暂无无冲突阵容。可切换「全部阵容」查看具体冲突。';
     }
   }
 
@@ -779,7 +599,6 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
       stopDetailReveal();
       detail.replaceChildren(record.detail);
     }
-    updatePlanAction(detail.querySelector('.skland-use-stage'));
     if (animate) reveal(record.detail, 'detail-entrance', 185);
   }
 
@@ -840,14 +659,6 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
     focusAfterNavigation: art.focusAfterNavigation,
     directoryConfiguration: art.directoryConfiguration,
     releaseForDirectoryPreview: art.releaseForDirectoryPreview,
-    getPlan() { return plan; },
-    resetPlan() {
-      plan = emptyPlan();
-      replaceIndex = null;
-      planSearch.value = '';
-      planPick.value = '';
-      planPanel.open = false;
-    },
     updateBans(banned, blocked, selectedDiy) {
       if (banned.size !== isBanned.size || [...banned].some(name => !isBanned.has(name)) ||
           blocked.size !== manualBans.size || [...blocked].some(name => !manualBans.has(name))) {
@@ -860,7 +671,6 @@ window.mountStrongholdSkland = function ({ mode, blockReason, linkTo, directoryL
       for (const record of records.values()) record.updateListBans();
       for (const record of detailRecords.values()) record.updateDetailBans?.();
       applyBanFilter();
-      renderPlan();
     },
     syncRoute(hash, params, animate) {
       art.close();

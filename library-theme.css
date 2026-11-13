@@ -67,15 +67,12 @@
   :root[data-theme="light"] .secondary:hover { background: var(--theme-hover); border-color: var(--gold); }
   :root[data-theme="light"] .section-dock a:hover,
   :root[data-theme="light"] .operator-directory .operator:is(:hover, :focus-visible) { background: var(--theme-hover); }
-  :root[data-theme="light"] .stage-control button[aria-pressed="true"] {
-    background: #2c211b; color: #faeaca;
-  }
 
-  :root[data-theme="light"] :is(.search-wrap, .library-catalog .toolbar select, #operator-toolbar select, #equipment-toolbar select, .operator-bond-filter > summary) {
+  :root[data-theme="light"] :is(.search-wrap, .library-catalog .toolbar select, .operator-toolbar select, #equipment-toolbar select, .operator-bond-filter > summary) {
     background: var(--panel); border-color: var(--line);
   }
   :root[data-theme="light"] :is(.search-wrap:focus-within, .operator-bond-filter[open] > summary) { border-color: var(--signal); }
-  :root[data-theme="light"] #operator-toolbar {
+  :root[data-theme="light"] .operator-toolbar {
     border-color: var(--line); border-inline-start-color: var(--red); background: var(--theme-section);
   }
   :root[data-theme="light"] .operator-bond-options { border-color: var(--line); box-shadow: 0 7px 16px #49362133; }

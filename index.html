@@ -128,10 +128,6 @@ h2 { color: var(--text); font-size: clamp(25px, 4vw, 37px); font-weight: 850; le
 .search-wrap input::placeholder { color: var(--quiet); }
 .search-wrap input::-webkit-search-cancel-button { cursor: pointer; }
 kbd { border: 1px solid var(--line); padding: 0 5px; color: var(--quiet); font: 12px/20px var(--mono); }
-.stage-control { display: flex; background: var(--paper); border: 1px solid var(--line); }
-.stage-control button { color: var(--soft); border: 0; background: transparent; padding: 8px 12px; font-size: 13px; white-space: nowrap; }
-.stage-control button:hover { color: var(--text); }
-.stage-control button[aria-pressed="true"] { background: var(--cream); color: #2c2219; font-weight: 800; }
 .result-count { color: var(--quiet); font-size: 12px; min-height: 19px; margin: 0 0 8px; }
 .cards { display: grid; gap: 14px; }
 .faction { border: 1px solid #494237; border-top: 2px solid var(--accent); background: var(--paper); }
@@ -257,8 +253,8 @@ summary:hover, details[open] summary { color: var(--accent); }
 .general-unit { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; text-decoration: none; }
 .general-unit:hover h3 { text-decoration: underline; }
 .pill { color: var(--soft); font-size: 11px; padding: 0 5px; background: #24221f; border: 1px solid #484238; }
-#operator-toolbar select, #equipment-toolbar select { min-height: 41px; max-width: 100%; background: #20211e; border: 1px solid #524e44; color: var(--text); padding: 0 8px; font-size: 13px; }
-#operator-toolbar { padding: 6px; border: 1px solid #57483b; border-left: 3px solid var(--oxide); background: #20201c; }
+.operator-toolbar select, #equipment-toolbar select { min-height: 41px; max-width: 100%; background: #20211e; border: 1px solid #524e44; color: var(--text); padding: 0 8px; font-size: 13px; }
+.operator-toolbar { padding: 6px; border: 1px solid #57483b; border-left: 3px solid var(--oxide); background: #20201c; }
 .directory-status, .directory-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 9px; }
 .directory-status { margin: 4px 0 8px; }
 #operators-title:focus { outline: none; }
@@ -271,7 +267,8 @@ summary:hover, details[open] summary { color: var(--accent); }
 [data-tier="4"] { --tier-color: #5cb9d3; }
 [data-tier="5"] { --tier-color: #e7c45b; }
 [data-tier="6"] { --tier-color: #ed9251; }
-.tier-filters { flex: 1 0 100%; min-width: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; margin: 0; border: 0; padding: 0; }
+.tier-filters { flex: 1 0 100%; min-width: 0; display: grid; grid-template-columns: repeat(var(--tier-columns, 8), minmax(0, 1fr)); gap: 4px; margin: 0; border: 0; padding: 0; }
+.tier-filters:has(input[name="round-operator-tier"]) { --tier-columns: 7; }
 .tier-filters label { position: relative; min-width: 0; }
 .tier-filters input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .tier-filters label span { min-height: 37px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 3px; border: 1px solid #43534a; background: #202722; color: var(--soft); font-size: 12px; }
@@ -544,8 +541,8 @@ summary:hover, details[open] summary { color: var(--accent); }
   .team-tier-list .operator-directory .operator .portrait { width: 34px; height: 34px; }
   .rules-grid .note { min-height: 0; padding-left: 50px; }
   .rules-grid .note::before { width: 41px; padding-left: 6px; font-size: 18px; }
-  #operator-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
-  #operator-toolbar select { width: 100%; }
+  .operator-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .operator-toolbar select { width: 100%; }
   #equipment-toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #equipment-toolbar .search-wrap { grid-column: 1 / -1; }
   .tier-filters { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -575,7 +572,6 @@ summary:hover, details[open] summary { color: var(--accent); }
   .faction, .note { break-inside: avoid; --accent: #222 !important; }
 }
 
-#operator-views { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 8px; }
 
 .library-layout { margin-top: 22px; }
 h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
@@ -668,8 +664,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
 .operator-bond-options label:has(input:checked) { border-color: var(--signal); color: var(--signal); }
 .operator-bond-options label img { flex: none; }
 .operator-bond-options input { accent-color: var(--signal); margin: 0; }
-#operators .operator-bond-label { font-size: 12px; }
-#operator-views { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+:is(#operators, #round-operators) .operator-bond-label { font-size: 12px; }
 #round-settings { position: relative; }
 #team-ban-panel > summary {
   display: flex; align-items: center; flex-wrap: wrap; gap: 3px 8px; min-height: 40px; padding-inline-end: 82px;
@@ -758,9 +753,9 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
   .nav-short { display: inline; }
   .section-dock small { display: none; }
   .section-dock a { min-height: 44px; }
-  #operator-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #operator-toolbar .search-wrap { grid-column: 1 / -1; }
-  #operator-bond .operator-bond-options { inset-inline: 0 auto; }
+  .operator-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .operator-toolbar .search-wrap { grid-column: 1 / -1; }
+  .operator-bond-filter:first-of-type .operator-bond-options { inset-inline: 0 auto; }
   .skill-header { gap: 7px; padding: 9px; }
   .skill-header > .portrait-frame .portrait { width: 42px; height: 42px; }
   .skill-header h2 { font-size: 18px; }
@@ -858,16 +853,16 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
   to { clip-path: inset(0); opacity: 1; }
 }
 </style>
-<link rel="stylesheet" href="./library-theme.css">
-<link rel="stylesheet" href="./skland-lineups.css">
+<link rel="stylesheet" href="./library-theme.css?v=round-quick-view">
+<link rel="stylesheet" href="./skland-lineups.css?v=round-quick-view">
 </head>
 <body id="top">
-<a class="skip" href="#skland-lineups">跳到本局配队</a>
+<a class="skip" href="#skland-lineups">跳到本局速查</a>
 <header class="masthead">
   <div class="wrap mast-inner">
     <a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><svg viewBox="466 42 207 250"><image href="./assets/6a5f5d14346eb18237d6.jpg" width="1560" height="500"/></svg></span><span>卫戍协议<small>作战资料站</small></span></a>
     <nav class="top-links" aria-label="页面分区">
-      <a href="#skland-lineups" aria-label="本局配队"><span class="nav-full">本局配队</span><span class="nav-short" aria-hidden="true">配队</span></a>
+      <a href="#skland-lineups" aria-label="本局速查"><span class="nav-full">本局速查</span><span class="nav-short" aria-hidden="true">本局</span></a>
       <a href="#strategies" aria-label="策略速查"><span class="nav-full">策略速查</span><span class="nav-short" aria-hidden="true">策略</span></a><a href="#bonds" aria-label="盟约速查"><span class="nav-full">盟约速查</span><span class="nav-short" aria-hidden="true">盟约</span></a><a href="#operators" aria-label="干员速查"><span class="nav-full">干员速查</span><span class="nav-short" aria-hidden="true">干员</span></a><a href="#equipment" aria-label="装备速查"><span class="nav-full">装备速查</span><span class="nav-short" aria-hidden="true">装备</span></a>
     </nav>
     <div class="mast-tools">
@@ -889,16 +884,16 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     <div class="hero-bar"><span><strong>规程 · 序列 I</strong></span><span><strong>10</strong> 核心盟约</span><span><strong>143</strong> 干员档案</span><span class="edition">国服 · 2026.11.09</span></div>
   </section>
   <nav class="section-dock" aria-label="速查入口">
-    <a href="#skland-lineups"><span><strong>本局配队</strong><small>本局 Ban / 森空岛阵容</small></span><i aria-hidden="true">↘</i></a>
+    <a href="#skland-lineups"><span><strong>本局速查</strong><small>本局 Ban / 可选干员 / 森空岛阵容</small></span><i aria-hidden="true">↘</i></a>
     <a href="#strategies"><span><strong>策略速查</strong><small>效果 / 解锁</small></span><i aria-hidden="true">↘</i></a>
     <a href="#bonds"><span><strong>盟约速查</strong><small>大盟约 / 小盟约</small></span><i aria-hidden="true">↘</i></a>
-    <a href="#operators"><span><strong>干员速查</strong><small>档案 / 本局 Ban</small></span><i aria-hidden="true">↘</i></a>
+    <a href="#operators"><span><strong>干员速查</strong><small>档案 / 技能 / 模组</small></span><i aria-hidden="true">↘</i></a>
     <a href="#equipment"><span><strong>装备速查</strong><small>效果 / 合成 / 转盟</small></span><i aria-hidden="true">↘</i></a>
   </nav>
   <div class="library-layout">
     <div class="main-content">
       <section id="skland-lineups" class="supplement" aria-labelledby="skland-title" tabindex="-1">
-        <div class="section-top"><span class="section-tab" aria-hidden="true">01</span><h2 id="skland-title">本局配队</h2></div>
+        <div class="section-top"><span class="section-tab" aria-hidden="true">01</span><h2 id="skland-title">本局速查</h2></div>
         <p class="intro">规程 · 序列 I / V3_1</p>
         <div id="round-settings" tabindex="-1">
           <details class="team-settings" id="team-ban-panel" tabindex="-1">
@@ -916,28 +911,31 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
               </form>
               <div id="team-block-list" class="team-tags"></div>
             </details>
-            <a class="inline-link skland-results-link" href="#skland-list">查看阵容列表 ↓</a>
+            <div class="round-result-links">
+              <a class="inline-link skland-results-link" href="#round-operators">查看可选干员 ↓</a>
+              <a class="inline-link skland-results-link" href="#skland-list">查看森空岛阵容 ↓</a>
+            </div>
           </details>
           <button type="button" id="team-new" class="secondary">新一局</button>
         </div>
-        <details id="skland-plan" class="team-settings" hidden>
-          <summary><strong>本局名单</strong><span id="skland-plan-count" role="status"></span></summary>
-          <p id="skland-plan-origin" class="skland-config"></p>
-          <ul id="skland-plan-members" class="skland-plan-members" aria-label="本局名单"></ul>
-          <form id="skland-plan-form">
-            <label class="sr-only" for="skland-plan-search">搜索本局可选干员</label>
-            <input id="skland-plan-search" type="search" placeholder="搜可选干员" autocomplete="off">
-            <label class="sr-only" for="skland-plan-pick">本局可选干员</label>
-            <select id="skland-plan-pick" required></select>
-            <button type="submit" class="secondary" id="skland-plan-add">加入名单</button>
-            <button type="button" class="secondary" id="skland-plan-cancel" hidden>取消换人</button>
-          </form>
-          <div class="skland-actions" id="skland-plan-export" hidden>
-            <button type="button" id="skland-plan-copy">复制本局名单 JSON</button>
-            <a class="inline-link" id="skland-plan-download" href="#" download="stronghold-round-lineup.json">下载本局名单 JSON</a>
-            <span class="skland-config" id="skland-plan-export-status" role="status"></span>
+        <details id="round-operators" class="team-settings" tabindex="-1" hidden>
+          <summary><strong>本局可选干员</strong><span id="round-available-count"></span></summary>
+          <div id="round-operator-controls"></div>
+          <div id="teams" tabindex="-1">
+            <details class="team-settings" id="team-diy">
+              <summary>自选编队 <span id="team-diy-count"></span></summary>
+              <p class="intro">可选已招募的六星干员和系统原型干员，Ⅴ、Ⅵ 阶本局各最多两名。</p>
+              <div id="team-diy-slots"></div>
+              <p id="team-diy-status" role="status"></p>
+            </details>
           </div>
-          <textarea id="skland-plan-export-text" class="skland-json" aria-label="本局名单 JSON" readonly hidden></textarea>
+          <div id="round-results" tabindex="-1">
+            <div class="team-list-head" id="team-results" tabindex="-1">
+              <h3>干员名单</h3>
+            </div>
+            <div class="team-pool"><div class="team-pool-group" data-pool="all"><section class="team-tier" data-tier="1"><h3><img class="tier-filter-icon" src="./assets/3ff5fb90057a01635d79.webp" width="22" height="22" alt="Ⅰ" decoding="async" loading="lazy">阶 <span>19 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="2"><h3><img class="tier-filter-icon" src="./assets/e554c9100ada6f364ea6.webp" width="22" height="22" alt="Ⅱ" decoding="async" loading="lazy">阶 <span>24 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="3"><h3><img class="tier-filter-icon" src="./assets/7efaa55626e7977f4800.webp" width="22" height="22" alt="Ⅲ" decoding="async" loading="lazy">阶 <span>26 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="4"><h3><img class="tier-filter-icon" src="./assets/88761a78e3054efdc445.webp" width="22" height="22" alt="Ⅳ" decoding="async" loading="lazy">阶 <span>27 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="5"><h3><img class="tier-filter-icon" src="./assets/91435adab76735a7f392.webp" width="22" height="22" alt="Ⅴ" decoding="async" loading="lazy">阶 <span>25 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="6"><h3><img class="tier-filter-icon" src="./assets/f31d0e994cb539f35a85.webp" width="22" height="22" alt="Ⅵ" decoding="async" loading="lazy">阶 <span>20 名</span></h3><div class="operator-directory"></div></section></div>
+            </div>
+          </div>
         </details>
         <div id="skland-list" tabindex="-1">
           <div class="skland-list-head">
@@ -1051,19 +1049,19 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
       <p class="result-count" data-library-count role="status" hidden></p>
       <div class="library-groups"><section class="library-group" data-library-group="core"><h3>大盟约 <span class="library-group-count">10 条</span></h3><div class="library-cards"><details class="library-card" id="bond-ursusShip" tabindex="-1" data-library-id="bond-ursusShip" data-library-kind="core" data-library-search="乌萨斯 大盟约 在场至少 3 名【乌萨斯】干员 【乌萨斯】干员攻击力和生命值提升（受层数影响），【乌萨斯】干员击倒其他单位时为【乌萨斯】叠加2层临时层数
 &lt;在场6名不同【乌萨斯】干员&gt;【乌萨斯】干员所受伤害的一定比例（受层数影响）转化为持续10秒的生命流失，当伤害来源被击倒时不再流失生命；阻挡敌人期间，敌人每秒受到该干员攻击力一定比例的法术伤害（受层数影响）；【乌萨斯】干员击倒其他单位时叠加的临时层数提升至4层"><summary class="library-card-summary"><img class="bond-icon" src="./assets/bafc5ebbcec4d550a93d.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="乌萨斯"><strong>乌萨斯</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【乌萨斯】干员</p><p class="game-copy" data-library-copy>【乌萨斯】干员攻击力和生命值提升（受层数影响），【乌萨斯】干员击倒其他单位时为【乌萨斯】叠加2层临时层数
-&lt;在场6名不同【乌萨斯】干员&gt;【乌萨斯】干员所受伤害的一定比例（受层数影响）转化为持续10秒的生命流失，当伤害来源被击倒时不再流失生命；阻挡敌人期间，敌人每秒受到该干员攻击力一定比例的法术伤害（受层数影响）；【乌萨斯】干员击倒其他单位时叠加的临时层数提升至4层</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E4%B9%8C%E8%90%A8%E6%96%AF">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E4%B9%8C%E8%90%A8%E6%96%AF">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-ursus">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_ursus">怒潮凛冬 【无惧风雪】 ↗</a></div></div></details><details class="library-card" id="bond-iberiaShip" tabindex="-1" data-library-id="bond-iberiaShip" data-library-kind="core" data-library-search="伊比利亚 大盟约 在场至少 3 名【伊比利亚】干员 【伊比利亚】干员或炼金单元每次造成伤害时，使目标每秒受到该单位攻击力一定比例的持续法术伤害（受层数影响），至多叠加10次，持续10秒
+&lt;在场6名不同【乌萨斯】干员&gt;【乌萨斯】干员所受伤害的一定比例（受层数影响）转化为持续10秒的生命流失，当伤害来源被击倒时不再流失生命；阻挡敌人期间，敌人每秒受到该干员攻击力一定比例的法术伤害（受层数影响）；【乌萨斯】干员击倒其他单位时叠加的临时层数提升至4层</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E4%B9%8C%E8%90%A8%E6%96%AF">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E4%B9%8C%E8%90%A8%E6%96%AF">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-ursus">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_ursus">怒潮凛冬 【无惧风雪】 ↗</a></div></div></details><details class="library-card" id="bond-iberiaShip" tabindex="-1" data-library-id="bond-iberiaShip" data-library-kind="core" data-library-search="伊比利亚 大盟约 在场至少 3 名【伊比利亚】干员 【伊比利亚】干员或炼金单元每次造成伤害时，使目标每秒受到该单位攻击力一定比例的持续法术伤害（受层数影响），至多叠加10次，持续10秒
 &lt;在场6名不同【伊比利亚】干员&gt;【伊比利亚】干员或炼金单元造成伤害时附带的持续法术伤害提升至2倍，并使目标移动速度-4%（至多-80%），持续10秒；【伊比利亚】干员或炼金单元每次造成伤害时，有一定概率使该次伤害弹射至周围一定范围内的敌人，造成300%攻击力的法术伤害"><summary class="library-card-summary"><img class="bond-icon" src="./assets/8e098fe5201022909518.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="伊比利亚"><strong>伊比利亚</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【伊比利亚】干员</p><p class="game-copy" data-library-copy>【伊比利亚】干员或炼金单元每次造成伤害时，使目标每秒受到该单位攻击力一定比例的持续法术伤害（受层数影响），至多叠加10次，持续10秒
-&lt;在场6名不同【伊比利亚】干员&gt;【伊比利亚】干员或炼金单元造成伤害时附带的持续法术伤害提升至2倍，并使目标移动速度-4%（至多-80%），持续10秒；【伊比利亚】干员或炼金单元每次造成伤害时，有一定概率使该次伤害弹射至周围一定范围内的敌人，造成300%攻击力的法术伤害</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E4%BC%8A%E6%AF%94%E5%88%A9%E4%BA%9A">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E4%BC%8A%E6%AF%94%E5%88%A9%E4%BA%9A">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-iberia">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_iberia">引星棘刺 【出航时刻】 ↗</a></div></div></details><details class="library-card" id="bond-lethaniaShip" tabindex="-1" data-library-id="bond-lethaniaShip" data-library-kind="core" data-library-search="莱塔尼亚 大盟约 在场至少 3 名【莱塔尼亚】干员 【莱塔尼亚】干员和召唤物攻击力提升（受层数影响），场上敌方单位被击倒时在附近召唤“一个小节”（场上最多存在10个）
+&lt;在场6名不同【伊比利亚】干员&gt;【伊比利亚】干员或炼金单元造成伤害时附带的持续法术伤害提升至2倍，并使目标移动速度-4%（至多-80%），持续10秒；【伊比利亚】干员或炼金单元每次造成伤害时，有一定概率使该次伤害弹射至周围一定范围内的敌人，造成300%攻击力的法术伤害</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E4%BC%8A%E6%AF%94%E5%88%A9%E4%BA%9A">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E4%BC%8A%E6%AF%94%E5%88%A9%E4%BA%9A">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-iberia">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_iberia">引星棘刺 【出航时刻】 ↗</a></div></div></details><details class="library-card" id="bond-lethaniaShip" tabindex="-1" data-library-id="bond-lethaniaShip" data-library-kind="core" data-library-search="莱塔尼亚 大盟约 在场至少 3 名【莱塔尼亚】干员 【莱塔尼亚】干员和召唤物攻击力提升（受层数影响），场上敌方单位被击倒时在附近召唤“一个小节”（场上最多存在10个）
 &lt;在场6名不同【莱塔尼亚】干员&gt;召唤“一个小节”时有一定概率（受层数影响）改为召唤“一个乐部”，在场时使【莱塔尼亚】干员攻击速度提升，场上【莱塔尼亚】召唤物上限提升至20个；场上我方干员被击倒时会额外召唤“一个小节”"><summary class="library-card-summary"><img class="bond-icon" src="./assets/8c2c1325d6ae73a6bbd5.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="莱塔尼亚"><strong>莱塔尼亚</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【莱塔尼亚】干员</p><p class="game-copy" data-library-copy>【莱塔尼亚】干员和召唤物攻击力提升（受层数影响），场上敌方单位被击倒时在附近召唤“一个小节”（场上最多存在10个）
-&lt;在场6名不同【莱塔尼亚】干员&gt;召唤“一个小节”时有一定概率（受层数影响）改为召唤“一个乐部”，在场时使【莱塔尼亚】干员攻击速度提升，场上【莱塔尼亚】召唤物上限提升至20个；场上我方干员被击倒时会额外召唤“一个小节”</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%8E%B1%E5%A1%94%E5%B0%BC%E4%BA%9A">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%8E%B1%E5%A1%94%E5%B0%BC%E4%BA%9A">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-leithanien">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_lethania">车尔尼 【流动乐章】 ↗</a></div></div></details><details class="library-card" id="bond-yanShip" tabindex="-1" data-library-id="bond-yanShip" data-library-kind="core" data-library-search="炎 大盟约 在场至少 3 名【炎】干员 【炎】干员攻击力提升（受层数影响）
+&lt;在场6名不同【莱塔尼亚】干员&gt;召唤“一个小节”时有一定概率（受层数影响）改为召唤“一个乐部”，在场时使【莱塔尼亚】干员攻击速度提升，场上【莱塔尼亚】召唤物上限提升至20个；场上我方干员被击倒时会额外召唤“一个小节”</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%8E%B1%E5%A1%94%E5%B0%BC%E4%BA%9A">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%8E%B1%E5%A1%94%E5%B0%BC%E4%BA%9A">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-leithanien">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_lethania">车尔尼 【流动乐章】 ↗</a></div></div></details><details class="library-card" id="bond-yanShip" tabindex="-1" data-library-id="bond-yanShip" data-library-kind="core" data-library-search="炎 大盟约 在场至少 3 名【炎】干员 【炎】干员攻击力提升（受层数影响）
 &lt;在场6名不同【炎】干员&gt;战斗开始时，【炎】干员每次攻击时造成攻击力一定比例的随机元素损伤；全场敌人元素损伤恢复速度提升（受层数影响）"><summary class="library-card-summary"><img class="bond-icon" src="./assets/12c6b1c55ebdd3d00a0e.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="炎"><strong>炎</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【炎】干员</p><p class="game-copy" data-library-copy>【炎】干员攻击力提升（受层数影响）
-&lt;在场6名不同【炎】干员&gt;战斗开始时，【炎】干员每次攻击时造成攻击力一定比例的随机元素损伤；全场敌人元素损伤恢复速度提升（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%82%8E">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E7%82%8E">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-yan">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_yan2">望 【黑白相易】 ↗</a><a class="inline-link" href="#strategy-band_yan">杜遥夜 【广交豪杰】 ↗</a></div></div></details><details class="library-card" id="bond-egirShip" tabindex="-1" data-library-id="bond-egirShip" data-library-kind="core" data-library-search="阿戈尔 大盟约 在场至少 3 名【阿戈尔】干员 【阿戈尔】干员生命值提升（受层数影响）
+&lt;在场6名不同【炎】干员&gt;战斗开始时，【炎】干员每次攻击时造成攻击力一定比例的随机元素损伤；全场敌人元素损伤恢复速度提升（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%82%8E">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E7%82%8E">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-yan">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_yan2">望 【黑白相易】 ↗</a><a class="inline-link" href="#strategy-band_yan">杜遥夜 【广交豪杰】 ↗</a></div></div></details><details class="library-card" id="bond-egirShip" tabindex="-1" data-library-id="bond-egirShip" data-library-kind="core" data-library-search="阿戈尔 大盟约 在场至少 3 名【阿戈尔】干员 【阿戈尔】干员生命值提升（受层数影响）
 战斗开始时，【阿戈尔】干员会依次吞噬身前一格干员对其造成5000点物理伤害并获得其基础攻击力和阻挡数，并叠加等于被吞噬者等阶的盟约层数（【阿戈尔】之间优先对更靠左和靠上的干员发起吞噬）
 &lt;在场6名不同【阿戈尔】干员&gt;前3名【阿戈尔】干员首次被击倒时立刻复活 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/057c765bfb1ddf9ac11a.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="阿戈尔"><strong>阿戈尔</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【阿戈尔】干员</p><p class="game-copy" data-library-copy>【阿戈尔】干员生命值提升（受层数影响）
 战斗开始时，【阿戈尔】干员会依次吞噬身前一格干员对其造成5000点物理伤害并获得其基础攻击力和阻挡数，并叠加等于被吞噬者等阶的盟约层数（【阿戈尔】之间优先对更靠左和靠上的干员发起吞噬）
-&lt;在场6名不同【阿戈尔】干员&gt;前3名【阿戈尔】干员首次被击倒时立刻复活</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E9%98%BF%E6%88%88%E5%B0%94">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E9%98%BF%E6%88%88%E5%B0%94">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-aegir">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_egir">歌蕾蒂娅 【猎人战法】 ↗</a><a class="inline-link" href="#strategy-band_clementia">克莱门莎 【崇高牺牲】 ↗</a></div></div></details><details class="library-card" id="bond-siracusaShip" tabindex="-1" data-library-id="bond-siracusaShip" data-library-kind="core" data-library-search="叙拉古 大盟约 在场至少 3 名【叙拉古】干员 【叙拉古】干员部署后攻击速度提升，持续一定时间（受层数影响）
+&lt;在场6名不同【阿戈尔】干员&gt;前3名【阿戈尔】干员首次被击倒时立刻复活</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E9%98%BF%E6%88%88%E5%B0%94">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E9%98%BF%E6%88%88%E5%B0%94">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-aegir">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_egir">歌蕾蒂娅 【猎人战法】 ↗</a><a class="inline-link" href="#strategy-band_clementia">克莱门莎 【崇高牺牲】 ↗</a></div></div></details><details class="library-card" id="bond-siracusaShip" tabindex="-1" data-library-id="bond-siracusaShip" data-library-kind="core" data-library-search="叙拉古 大盟约 在场至少 3 名【叙拉古】干员 【叙拉古】干员部署后攻击速度提升，持续一定时间（受层数影响）
 &lt;在场6名不同【叙拉古】干员&gt;每次攻击时有一定概率为敌人随机附加一个异常状态，持续一定时间（受层数影响）；当敌人存在2种或以上异常状态时，每秒对自身及周围造成一次真实伤害（受层数影响）"><summary class="library-card-summary"><img class="bond-icon" src="./assets/021412cc399aa6493568.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="叙拉古"><strong>叙拉古</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【叙拉古】干员</p><p class="game-copy" data-library-copy>【叙拉古】干员部署后攻击速度提升，持续一定时间（受层数影响）
-&lt;在场6名不同【叙拉古】干员&gt;每次攻击时有一定概率为敌人随机附加一个异常状态，持续一定时间（受层数影响）；当敌人存在2种或以上异常状态时，每秒对自身及周围造成一次真实伤害（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8F%99%E6%8B%89%E5%8F%A4">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%8F%99%E6%8B%89%E5%8F%A4">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-siracusa">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_siracusa">裁度 【量体裁衣】 ↗</a><a class="inline-link" href="#strategy-band_bond">贾维 【团伙行动】 ↗</a></div></div></details><details class="library-card" id="bond-kjeragShip" tabindex="-1" data-library-id="bond-kjeragShip" data-library-kind="core" data-library-search="谢拉格 大盟约 在场至少 3 名【谢拉格】干员 【谢拉格】干员造成的伤害提升，对寒冷、冻结敌人获得额外提升（受层数影响）
+&lt;在场6名不同【叙拉古】干员&gt;每次攻击时有一定概率为敌人随机附加一个异常状态，持续一定时间（受层数影响）；当敌人存在2种或以上异常状态时，每秒对自身及周围造成一次真实伤害（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8F%99%E6%8B%89%E5%8F%A4">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%8F%99%E6%8B%89%E5%8F%A4">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-siracusa">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_siracusa">裁度 【量体裁衣】 ↗</a><a class="inline-link" href="#strategy-band_bond">贾维 【团伙行动】 ↗</a></div></div></details><details class="library-card" id="bond-kjeragShip" tabindex="-1" data-library-id="bond-kjeragShip" data-library-kind="core" data-library-search="谢拉格 大盟约 在场至少 3 名【谢拉格】干员 【谢拉格】干员造成的伤害提升，对寒冷、冻结敌人获得额外提升（受层数影响）
 &lt;每叠加100层&gt;获得1件谢拉格不融冰
 &lt;在场6名不同【谢拉格】干员&gt;战斗开始时召唤可自主行动的雪山巨人（攻击力和生命值受层数影响）；雪山巨人将在巨人和雪山形态间转换
 雪山形态：可以阻挡敌人并造成溅射伤害，攻击被冻结的敌人时造成高额法术伤害并解除目标的冻结状态
@@ -1071,72 +1069,59 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
 &lt;每叠加100层&gt;获得1件谢拉格不融冰
 &lt;在场6名不同【谢拉格】干员&gt;战斗开始时召唤可自主行动的雪山巨人（攻击力和生命值受层数影响）；雪山巨人将在巨人和雪山形态间转换
 雪山形态：可以阻挡敌人并造成溅射伤害，攻击被冻结的敌人时造成高额法术伤害并解除目标的冻结状态
-巨人形态：可以移动并对敌人造成远程溅射伤害</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%B0%A2%E6%8B%89%E6%A0%BC">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%B0%A2%E6%8B%89%E6%A0%BC">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-kjerag">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_kjerag2">耶拉 【不融信念】 ↗</a><a class="inline-link" href="#strategy-band_kjerag">休露丝 【雪域礼赠】 ↗</a></div></div></details><details class="library-card" id="bond-victoriaShip" tabindex="-1" data-library-id="bond-victoriaShip" data-library-kind="core" data-library-search="维多利亚 大盟约 在场至少 3 名【维多利亚】干员 携带装备的【维多利亚】干员造成的伤害提升（受层数影响）
+巨人形态：可以移动并对敌人造成远程溅射伤害</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%B0%A2%E6%8B%89%E6%A0%BC">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%B0%A2%E6%8B%89%E6%A0%BC">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-kjerag">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_kjerag2">耶拉 【不融信念】 ↗</a><a class="inline-link" href="#strategy-band_kjerag">休露丝 【雪域礼赠】 ↗</a></div></div></details><details class="library-card" id="bond-victoriaShip" tabindex="-1" data-library-id="bond-victoriaShip" data-library-kind="core" data-library-search="维多利亚 大盟约 在场至少 3 名【维多利亚】干员 携带装备的【维多利亚】干员造成的伤害提升（受层数影响）
 &lt;每叠加25层&gt;获得1件带有随机效果的维式重锤
 &lt;在场6名不同【维多利亚】干员&gt;【维多利亚】干员每携带1件装备攻击力提升，携带进阶装备时额外提升"><summary class="library-card-summary"><img class="bond-icon" src="./assets/aa99c01b64804d978b11.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="维多利亚"><strong>维多利亚</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【维多利亚】干员</p><p class="game-copy" data-library-copy>携带装备的【维多利亚】干员造成的伤害提升（受层数影响）
 &lt;每叠加25层&gt;获得1件带有随机效果的维式重锤
-&lt;在场6名不同【维多利亚】干员&gt;【维多利亚】干员每携带1件装备攻击力提升，携带进阶装备时额外提升</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%BB%B4%E5%A4%9A%E5%88%A9%E4%BA%9A">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E7%BB%B4%E5%A4%9A%E5%88%A9%E4%BA%9A">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-victoria">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_victoria">洛洛 【自发制造】 ↗</a><a class="inline-link" href="#strategy-band_harold">哈洛德 【人才盲盒】 ↗</a></div></div></details><details class="library-card" id="bond-sargonShip" tabindex="-1" data-library-id="bond-sargonShip" data-library-kind="core" data-library-search="萨尔贡 大盟约 在场至少 3 名【萨尔贡】干员 【萨尔贡】干员开启技能时，所有【萨尔贡】干员攻击速度提升（有上限），持续一定时间（受层数影响）
+&lt;在场6名不同【维多利亚】干员&gt;【维多利亚】干员每携带1件装备攻击力提升，携带进阶装备时额外提升</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%BB%B4%E5%A4%9A%E5%88%A9%E4%BA%9A">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E7%BB%B4%E5%A4%9A%E5%88%A9%E4%BA%9A">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-victoria">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_victoria">洛洛 【自发制造】 ↗</a><a class="inline-link" href="#strategy-band_harold">哈洛德 【人才盲盒】 ↗</a></div></div></details><details class="library-card" id="bond-sargonShip" tabindex="-1" data-library-id="bond-sargonShip" data-library-kind="core" data-library-search="萨尔贡 大盟约 在场至少 3 名【萨尔贡】干员 【萨尔贡】干员开启技能时，所有【萨尔贡】干员攻击速度提升（有上限），持续一定时间（受层数影响）
 &lt;在场6名不同【萨尔贡】干员&gt;【萨尔贡】干员每次开启技能时，将在攻击范围内制造一个流沙地面。位于流沙地面上的敌人受到一定的迟钝效果（受层数影响），每5秒造成一次法术伤害（受层数影响）并束缚1秒；【萨尔贡】干员技能持续期间，攻击范围内的流沙地面使敌人的迟钝效果变为2倍，每秒受到一定法术伤害（受层数影响）"><summary class="library-card-summary"><img class="bond-icon" src="./assets/13063e680984c6da74a0.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="萨尔贡"><strong>萨尔贡</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【萨尔贡】干员</p><p class="game-copy" data-library-copy>【萨尔贡】干员开启技能时，所有【萨尔贡】干员攻击速度提升（有上限），持续一定时间（受层数影响）
-&lt;在场6名不同【萨尔贡】干员&gt;【萨尔贡】干员每次开启技能时，将在攻击范围内制造一个流沙地面。位于流沙地面上的敌人受到一定的迟钝效果（受层数影响），每5秒造成一次法术伤害（受层数影响）并束缚1秒；【萨尔贡】干员技能持续期间，攻击范围内的流沙地面使敌人的迟钝效果变为2倍，每秒受到一定法术伤害（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%90%A8%E5%B0%94%E8%B4%A1">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%90%A8%E5%B0%94%E8%B4%A1">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-sargon">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_sargon">娜仁图亚 【沙洲梦魇】 ↗</a><a class="inline-link" href="#strategy-band_pepe">佩佩 【博学多通】 ↗</a></div></div></details><details class="library-card" id="bond-kazimierzShip" tabindex="-1" data-library-id="bond-kazimierzShip" data-library-kind="core" data-library-search="卡西米尔 大盟约 在场至少 3 名【卡西米尔】干员 每次有干员部署时，【卡西米尔】干员攻击力提升持续至战斗结束（上限受层数影响）
+&lt;在场6名不同【萨尔贡】干员&gt;【萨尔贡】干员每次开启技能时，将在攻击范围内制造一个流沙地面。位于流沙地面上的敌人受到一定的迟钝效果（受层数影响），每5秒造成一次法术伤害（受层数影响）并束缚1秒；【萨尔贡】干员技能持续期间，攻击范围内的流沙地面使敌人的迟钝效果变为2倍，每秒受到一定法术伤害（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%90%A8%E5%B0%94%E8%B4%A1">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%90%A8%E5%B0%94%E8%B4%A1">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-sargon">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_sargon">娜仁图亚 【沙洲梦魇】 ↗</a><a class="inline-link" href="#strategy-band_pepe">佩佩 【博学多通】 ↗</a></div></div></details><details class="library-card" id="bond-kazimierzShip" tabindex="-1" data-library-id="bond-kazimierzShip" data-library-kind="core" data-library-search="卡西米尔 大盟约 在场至少 3 名【卡西米尔】干员 每次有干员部署时，【卡西米尔】干员攻击力提升持续至战斗结束（上限受层数影响）
 &lt;在场6名不同【卡西米尔】干员&gt;【卡西米尔】地面干员被击倒时离场，并召唤整备区最右侧的【卡西米尔】干员上场（不改变当前盟约的激活状态）；【卡西米尔】干员开启技能或部署后30秒内攻击时附带攻击力65%的真实伤害 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/e5e8044f05f2f91f4cae.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="卡西米尔"><strong>卡西米尔</strong><small>在场至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 3 名【卡西米尔】干员</p><p class="game-copy" data-library-copy>每次有干员部署时，【卡西米尔】干员攻击力提升持续至战斗结束（上限受层数影响）
-&lt;在场6名不同【卡西米尔】干员&gt;【卡西米尔】地面干员被击倒时离场，并召唤整备区最右侧的【卡西米尔】干员上场（不改变当前盟约的激活状态）；【卡西米尔】干员开启技能或部署后30秒内攻击时附带攻击力65%的真实伤害</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8D%A1%E8%A5%BF%E7%B1%B3%E5%B0%94">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%8D%A1%E8%A5%BF%E7%B1%B3%E5%B0%94">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-kazimierz">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_kazimier">焰尾 【骑士团长】 ↗</a><a class="inline-link" href="#strategy-band_mlynar">玛恩纳 【业务指标】 ↗</a></div></div></details></div></section><section class="library-group" data-library-group="minor"><h3>小盟约 <span class="library-group-count">16 条</span></h3><div class="library-cards"><details class="library-card" id="bond-preciShip" tabindex="-1" data-library-id="bond-preciShip" data-library-kind="minor" data-library-search="精准 小盟约 在场至少 2 名【精准】干员 【精准】干员攻击力提升（受层数影响）
+&lt;在场6名不同【卡西米尔】干员&gt;【卡西米尔】地面干员被击倒时离场，并召唤整备区最右侧的【卡西米尔】干员上场（不改变当前盟约的激活状态）；【卡西米尔】干员开启技能或部署后30秒内攻击时附带攻击力65%的真实伤害</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8D%A1%E8%A5%BF%E7%B1%B3%E5%B0%94">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%8D%A1%E8%A5%BF%E7%B1%B3%E5%B0%94">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-kazimierz">转盟配方 ↗</a><a class="inline-link" href="#strategy-band_kazimier">焰尾 【骑士团长】 ↗</a><a class="inline-link" href="#strategy-band_mlynar">玛恩纳 【业务指标】 ↗</a></div></div></details></div></section><section class="library-group" data-library-group="minor"><h3>小盟约 <span class="library-group-count">16 条</span></h3><div class="library-cards"><details class="library-card" id="bond-preciShip" tabindex="-1" data-library-id="bond-preciShip" data-library-kind="minor" data-library-search="精准 小盟约 在场至少 2 名【精准】干员 【精准】干员攻击力提升（受层数影响）
 &lt;在场3名不同【精准】干员&gt;生效范围变为【精准】干员和所有远程干员，且攻击无视一定的防御力和法术抗性"><summary class="library-card-summary"><img class="bond-icon" src="./assets/bb5b0864920c762a8819.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="精准"><strong>精准</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【精准】干员</p><p class="game-copy" data-library-copy>【精准】干员攻击力提升（受层数影响）
-&lt;在场3名不同【精准】干员&gt;生效范围变为【精准】干员和所有远程干员，且攻击无视一定的防御力和法术抗性</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%B2%BE%E5%87%86">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E7%B2%BE%E5%87%86">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-preciShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-swiftShip" tabindex="-1" data-library-id="bond-swiftShip" data-library-kind="minor" data-library-search="迅捷 小盟约 在场至少 2 名【迅捷】干员 【迅捷】干员技能结束时有概率（受层数影响）立刻回复12点技力
+&lt;在场3名不同【精准】干员&gt;生效范围变为【精准】干员和所有远程干员，且攻击无视一定的防御力和法术抗性</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%B2%BE%E5%87%86">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E7%B2%BE%E5%87%86">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-preciShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-swiftShip" tabindex="-1" data-library-id="bond-swiftShip" data-library-kind="minor" data-library-search="迅捷 小盟约 在场至少 2 名【迅捷】干员 【迅捷】干员技能结束时有概率（受层数影响）立刻回复12点技力
 &lt;达到40层&gt;所有干员技能结束时有等概率额外回复15点技力"><summary class="library-card-summary"><img class="bond-icon" src="./assets/dbb9be7df244b4730e7a.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="迅捷"><strong>迅捷</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【迅捷】干员</p><p class="game-copy" data-library-copy>【迅捷】干员技能结束时有概率（受层数影响）立刻回复12点技力
-&lt;达到40层&gt;所有干员技能结束时有等概率额外回复15点技力</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%BF%85%E6%8D%B7">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%BF%85%E6%8D%B7">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-swiftShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-skillfulShip" tabindex="-1" data-library-id="bond-skillfulShip" data-library-kind="minor" data-library-search="灵巧 小盟约 在场至少 2 名【灵巧】干员 【灵巧】干员及周围4格干员攻击速度提升（受层数影响）
+&lt;达到40层&gt;所有干员技能结束时有等概率额外回复15点技力</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%BF%85%E6%8D%B7">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%BF%85%E6%8D%B7">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-swiftShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-skillfulShip" tabindex="-1" data-library-id="bond-skillfulShip" data-library-kind="minor" data-library-search="灵巧 小盟约 在场至少 2 名【灵巧】干员 【灵巧】干员及周围4格干员攻击速度提升（受层数影响）
 &lt;达到40层&gt;生效范围变为【灵巧】干员周围8格 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/c97e9707059266727211.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="灵巧"><strong>灵巧</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【灵巧】干员</p><p class="game-copy" data-library-copy>【灵巧】干员及周围4格干员攻击速度提升（受层数影响）
-&lt;达到40层&gt;生效范围变为【灵巧】干员周围8格</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%81%B5%E5%B7%A7">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E7%81%B5%E5%B7%A7">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-skillfulShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-steadShip" tabindex="-1" data-library-id="bond-steadShip" data-library-kind="minor" data-library-search="坚守 小盟约 在场至少 2 名【坚守】干员 所有干员生命值提升（受层数影响）
+&lt;达到40层&gt;生效范围变为【灵巧】干员周围8格</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%81%B5%E5%B7%A7">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E7%81%B5%E5%B7%A7">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-skillfulShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-steadShip" tabindex="-1" data-library-id="bond-steadShip" data-library-kind="minor" data-library-search="坚守 小盟约 在场至少 2 名【坚守】干员 所有干员生命值提升（受层数影响）
 &lt;在场3名不同【坚守】干员&gt;场上非【坚守】干员受到伤害时，所受伤害的40%由所有【坚守】干员平均承担。【坚守】干员受到伤害时，伤害来源将受到一定法术伤害（受层数影响，每0.2秒至多触发1次）和持续5秒的40%脆弱效果"><summary class="library-card-summary"><img class="bond-icon" src="./assets/2cdc65970b8bc2c0986a.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="坚守"><strong>坚守</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【坚守】干员</p><p class="game-copy" data-library-copy>所有干员生命值提升（受层数影响）
-&lt;在场3名不同【坚守】干员&gt;场上非【坚守】干员受到伤害时，所受伤害的40%由所有【坚守】干员平均承担。【坚守】干员受到伤害时，伤害来源将受到一定法术伤害（受层数影响，每0.2秒至多触发1次）和持续5秒的40%脆弱效果</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%9D%9A%E5%AE%88">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%9D%9A%E5%AE%88">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-steadShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-deputShip" tabindex="-1" data-library-id="bond-deputShip" data-library-kind="minor" data-library-search="助力 小盟约 在场至少 2 名【助力】干员 所有干员防御力提升（受层数影响），再部署时间减少
+&lt;在场3名不同【坚守】干员&gt;场上非【坚守】干员受到伤害时，所受伤害的40%由所有【坚守】干员平均承担。【坚守】干员受到伤害时，伤害来源将受到一定法术伤害（受层数影响，每0.2秒至多触发1次）和持续5秒的40%脆弱效果</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%9D%9A%E5%AE%88">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%9D%9A%E5%AE%88">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-steadShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-deputShip" tabindex="-1" data-library-id="bond-deputShip" data-library-kind="minor" data-library-search="助力 小盟约 在场至少 2 名【助力】干员 所有干员防御力提升（受层数影响），再部署时间减少
 休整期结束时，使当前所有已激活盟约层数+2
 &lt;在场3名不同【助力】干员&gt;改为层数+4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/4157b95656adb79e8bcd.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="助力"><strong>助力</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【助力】干员</p><p class="game-copy" data-library-copy>所有干员防御力提升（受层数影响），再部署时间减少
 休整期结束时，使当前所有已激活盟约层数+2
-&lt;在场3名不同【助力】干员&gt;改为层数+4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8A%A9%E5%8A%9B">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%8A%A9%E5%8A%9B">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-visiShip" tabindex="-1" data-library-id="bond-visiShip" data-library-kind="minor" data-library-search="远见 小盟约 场上或整备区至少 2 名【远见】干员 &lt;每叠加10层&gt;获得一次2资金
+&lt;在场3名不同【助力】干员&gt;改为层数+4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8A%A9%E5%8A%9B">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%8A%A9%E5%8A%9B">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-visiShip" tabindex="-1" data-library-id="bond-visiShip" data-library-kind="minor" data-library-search="远见 小盟约 场上或整备区至少 2 名【远见】干员 &lt;每叠加10层&gt;获得一次2资金
 &lt;首次达到80层&gt;所有【远见】干员购买价格永久-1资金
 &lt;首次达到150层&gt;所有【远见】干员购买价格额外永久-1资金
 （整备区的【远见】干员也可用于激活盟约）"><summary class="library-card-summary"><img class="bond-icon" src="./assets/399b90c8bf4d6e8dd6f8.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="远见"><strong>远见</strong><small>场上或整备区至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 场上或整备区至少 2 名【远见】干员</p><p class="game-copy" data-library-copy>&lt;每叠加10层&gt;获得一次2资金
 &lt;首次达到80层&gt;所有【远见】干员购买价格永久-1资金
 &lt;首次达到150层&gt;所有【远见】干员购买价格额外永久-1资金
-（整备区的【远见】干员也可用于激活盟约）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%BF%9C%E8%A7%81">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%BF%9C%E8%A7%81">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-miraShip" tabindex="-1" data-library-id="bond-miraShip" data-library-kind="minor" data-library-search="奇迹 小盟约 场上或整备区至少 2 名【奇迹】干员 刷新调度中心时，有概率使下次刷新不消耗资金（受层数影响）
+（整备区的【远见】干员也可用于激活盟约）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%BF%9C%E8%A7%81">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%BF%9C%E8%A7%81">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-miraShip" tabindex="-1" data-library-id="bond-miraShip" data-library-kind="minor" data-library-search="奇迹 小盟约 场上或整备区至少 2 名【奇迹】干员 刷新调度中心时，有概率使下次刷新不消耗资金（受层数影响）
 &lt;首次达到100层&gt;调度中心刷新时至少出现一名等同于当前调度中心等级的干员
 （整备区的【奇迹】干员也可用于激活盟约） 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/678209d693f7d3bf7a91.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="奇迹"><strong>奇迹</strong><small>场上或整备区至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 场上或整备区至少 2 名【奇迹】干员</p><p class="game-copy" data-library-copy>刷新调度中心时，有概率使下次刷新不消耗资金（受层数影响）
 &lt;首次达到100层&gt;调度中心刷新时至少出现一名等同于当前调度中心等级的干员
-（整备区的【奇迹】干员也可用于激活盟约）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%A5%87%E8%BF%B9">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%A5%87%E8%BF%B9">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-investShip" tabindex="-1" data-library-id="bond-investShip" data-library-kind="minor" data-library-search="投资人 小盟约 场上或整备区至少 3 名【投资人】干员 干员的“获得时”类特质每次触发2次
+（整备区的【奇迹】干员也可用于激活盟约）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%A5%87%E8%BF%B9">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%A5%87%E8%BF%B9">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-investShip" tabindex="-1" data-library-id="bond-investShip" data-library-kind="minor" data-library-search="投资人 小盟约 场上或整备区至少 3 名【投资人】干员 干员的“获得时”类特质每次触发2次
 &lt;达到100层&gt;“获得时”类特质每次触发3次
 （整备区的【投资人】干员也可用于激活盟约） 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/0ec25275f7009368c6e3.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="投资人"><strong>投资人</strong><small>场上或整备区至少 3 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 场上或整备区至少 3 名【投资人】干员</p><p class="game-copy" data-library-copy>干员的“获得时”类特质每次触发2次
 &lt;达到100层&gt;“获得时”类特质每次触发3次
-（整备区的【投资人】干员也可用于激活盟约）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E6%8A%95%E8%B5%84%E4%BA%BA">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E6%8A%95%E8%B5%84%E4%BA%BA">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-raidShip" tabindex="-1" data-library-id="bond-raidShip" data-library-kind="minor" data-library-search="突袭 小盟约 在场至少 2 名【突袭】干员 【突袭】干员10秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即再部署至一名地面敌人周围，期间攻击力和生命值提升（受层数影响）
+（整备区的【投资人】干员也可用于激活盟约）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E6%8A%95%E8%B5%84%E4%BA%BA">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E6%8A%95%E8%B5%84%E4%BA%BA">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-raidShip" tabindex="-1" data-library-id="bond-raidShip" data-library-kind="minor" data-library-search="突袭 小盟约 在场至少 2 名【突袭】干员 【突袭】干员10秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即再部署至一名地面敌人周围，期间攻击力和生命值提升（受层数影响）
 &lt;达到50层&gt;所有干员攻击速度+50 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/09045ef63e47cb8ad4e7.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="突袭"><strong>突袭</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【突袭】干员</p><p class="game-copy" data-library-copy>【突袭】干员10秒内未进行攻击或技能就绪时，若范围内没有敌人，则保留技力立即再部署至一名地面敌人周围，期间攻击力和生命值提升（受层数影响）
-&lt;达到50层&gt;所有干员攻击速度+50</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%AA%81%E8%A2%AD">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E7%AA%81%E8%A2%AD">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-raidShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-indomShip" tabindex="-1" data-library-id="bond-indomShip" data-library-kind="minor" data-library-search="不屈 小盟约 在场至少 2 名【不屈】干员 地面干员被击倒时，有概率立即重新部署（受层数影响）
+&lt;达到50层&gt;所有干员攻击速度+50</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%AA%81%E8%A2%AD">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E7%AA%81%E8%A2%AD">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-raidShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-indomShip" tabindex="-1" data-library-id="bond-indomShip" data-library-kind="minor" data-library-search="不屈 小盟约 在场至少 2 名【不屈】干员 地面干员被击倒时，有概率立即重新部署（受层数影响）
 &lt;在场3名不同【不屈】干员&gt;地面干员被击倒时使场上所有干员技力+5"><summary class="library-card-summary"><img class="bond-icon" src="./assets/cf6a946e2128b8804cd6.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="不屈"><strong>不屈</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【不屈】干员</p><p class="game-copy" data-library-copy>地面干员被击倒时，有概率立即重新部署（受层数影响）
-&lt;在场3名不同【不屈】干员&gt;地面干员被击倒时使场上所有干员技力+5</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E4%B8%8D%E5%B1%88">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E4%B8%8D%E5%B1%88">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-indomShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-maniShip" tabindex="-1" data-library-id="bond-maniShip" data-library-kind="minor" data-library-search="调和 小盟约 在场至少 1 名【调和】干员 激活时使场上核心盟约的激活人数+1，【调和】干员享受已激活的核心盟约的效果"><summary class="library-card-summary"><img class="bond-icon" src="./assets/a334a719f0d01ac8f1e9.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="调和"><strong>调和</strong><small>在场至少 1 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 1 名【调和】干员</p><p class="game-copy" data-library-copy>激活时使场上核心盟约的激活人数+1，【调和】干员享受已激活的核心盟约的效果</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%B0%83%E5%92%8C">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%B0%83%E5%92%8C">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-emptyShip" tabindex="-1" data-library-id="bond-emptyShip" data-library-kind="minor" data-library-search="协防干员 小盟约 在场至少 2 名【协防干员】干员 所有干员受到的物理和法术伤害-20%，【协防干员】伤害提升至120%，精锐【协防干员】造成伤害提升至140%"><summary class="library-card-summary"><img class="bond-icon" src="./assets/e95ec4d17a9f03a60261.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="协防干员"><strong>协防干员</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【协防干员】干员</p><p class="game-copy" data-library-copy>所有干员受到的物理和法术伤害-20%，【协防干员】伤害提升至120%，精锐【协防干员】造成伤害提升至140%</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8D%8F%E9%98%B2%E5%B9%B2%E5%91%98">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%8D%8F%E9%98%B2%E5%B9%B2%E5%91%98">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-soloShip" tabindex="-1" data-library-id="bond-soloShip" data-library-kind="minor" data-library-search="独行 小盟约 在场恰好 1 名【独行】干员 &lt;在场1名【独行】干员&gt;【独行】干员攻击力和生命值+60%，初始技力+15（在场2名及以上【独行】干员时失效） 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/31045b3d94b6f861166c.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="独行"><strong>独行</strong><small>在场恰好 1 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场恰好 1 名【独行】干员</p><p class="game-copy" data-library-copy>&lt;在场1名【独行】干员&gt;【独行】干员攻击力和生命值+60%，初始技力+15（在场2名及以上【独行】干员时失效）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%8B%AC%E8%A1%8C">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E7%8B%AC%E8%A1%8C">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-suntShip" tabindex="-1" data-library-id="bond-suntShip" data-library-kind="minor" data-library-search="绝技 小盟约 在场至少 2 名精锐干员 &lt;在场2名精锐状态的干员&gt;精锐状态的干员攻击力+30%
+&lt;在场3名不同【不屈】干员&gt;地面干员被击倒时使场上所有干员技力+5</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E4%B8%8D%E5%B1%88">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E4%B8%8D%E5%B1%88">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-indomShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-maniShip" tabindex="-1" data-library-id="bond-maniShip" data-library-kind="minor" data-library-search="调和 小盟约 在场至少 1 名【调和】干员 激活时使场上核心盟约的激活人数+1，【调和】干员享受已激活的核心盟约的效果"><summary class="library-card-summary"><img class="bond-icon" src="./assets/a334a719f0d01ac8f1e9.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="调和"><strong>调和</strong><small>在场至少 1 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 1 名【调和】干员</p><p class="game-copy" data-library-copy>激活时使场上核心盟约的激活人数+1，【调和】干员享受已激活的核心盟约的效果</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%B0%83%E5%92%8C">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%B0%83%E5%92%8C">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-emptyShip" tabindex="-1" data-library-id="bond-emptyShip" data-library-kind="minor" data-library-search="协防干员 小盟约 在场至少 2 名【协防干员】干员 所有干员受到的物理和法术伤害-20%，【协防干员】伤害提升至120%，精锐【协防干员】造成伤害提升至140%"><summary class="library-card-summary"><img class="bond-icon" src="./assets/e95ec4d17a9f03a60261.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="协防干员"><strong>协防干员</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【协防干员】干员</p><p class="game-copy" data-library-copy>所有干员受到的物理和法术伤害-20%，【协防干员】伤害提升至120%，精锐【协防干员】造成伤害提升至140%</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%8D%8F%E9%98%B2%E5%B9%B2%E5%91%98">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%8D%8F%E9%98%B2%E5%B9%B2%E5%91%98">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-soloShip" tabindex="-1" data-library-id="bond-soloShip" data-library-kind="minor" data-library-search="独行 小盟约 在场恰好 1 名【独行】干员 &lt;在场1名【独行】干员&gt;【独行】干员攻击力和生命值+60%，初始技力+15（在场2名及以上【独行】干员时失效） 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/31045b3d94b6f861166c.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="独行"><strong>独行</strong><small>在场恰好 1 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场恰好 1 名【独行】干员</p><p class="game-copy" data-library-copy>&lt;在场1名【独行】干员&gt;【独行】干员攻击力和生命值+60%，初始技力+15（在场2名及以上【独行】干员时失效）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E7%8B%AC%E8%A1%8C">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E7%8B%AC%E8%A1%8C">查本局可选成员 ↗</a></div></div></details><details class="library-card" id="bond-suntShip" tabindex="-1" data-library-id="bond-suntShip" data-library-kind="minor" data-library-search="绝技 小盟约 在场至少 2 名精锐干员 &lt;在场2名精锐状态的干员&gt;精锐状态的干员攻击力+30%
 &lt;在场5名精锐状态的干员&gt;精锐状态的干员技力消耗-30%
 （所有干员的精锐状态均可激活盟约） 标准模拟 极速模拟 规程等级1 规程等级2 规程等级3 规程等级4"><summary class="library-card-summary"><img class="bond-icon" src="./assets/b1041735b105ef82909f.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="绝技"><strong>绝技</strong><small>在场至少 2 名精锐干员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名精锐干员</p><p class="game-copy" data-library-copy>&lt;在场2名精锐状态的干员&gt;精锐状态的干员攻击力+30%
 &lt;在场5名精锐状态的干员&gt;精锐状态的干员技力消耗-30%
 （所有干员的精锐状态均可激活盟约）</p><p class="library-card-meta">不生效模式 · 标准模拟、极速模拟、规程等级1、规程等级2、规程等级3、规程等级4</p></div></details><details class="library-card" id="bond-docShip" tabindex="-1" data-library-id="bond-docShip" data-library-kind="minor" data-library-search="聚合 小盟约 在场至少 2 名【聚合】干员 【聚合】干员攻击范围内的我方单位每秒回复相当于该干员一定比例攻击力的生命值和一定比例攻击力的元素损伤（受层数影响）
 &lt;在场3名【聚合】干员&gt;【聚合】干员攻击范围内的所有干员获得一定比例的庇护（受层数影响）"><summary class="library-card-summary"><img class="bond-icon" src="./assets/f54655544acdcdf9d720.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="聚合"><strong>聚合</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【聚合】干员</p><p class="game-copy" data-library-copy>【聚合】干员攻击范围内的我方单位每秒回复相当于该干员一定比例攻击力的生命值和一定比例攻击力的元素损伤（受层数影响）
-&lt;在场3名【聚合】干员&gt;【聚合】干员攻击范围内的所有干员获得一定比例的庇护（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%81%9A%E5%90%88">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E8%81%9A%E5%90%88">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-docShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-arcaneShip" tabindex="-1" data-library-id="bond-arcaneShip" data-library-kind="minor" data-library-search="奥术 小盟约 在场至少 2 名【奥术】干员 【奥术】干员造成伤害时，额外附加一次一定攻击力的法术伤害（受层数影响）
+&lt;在场3名【聚合】干员&gt;【聚合】干员攻击范围内的所有干员获得一定比例的庇护（受层数影响）</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E8%81%9A%E5%90%88">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E8%81%9A%E5%90%88">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-docShip">转盟配方 ↗</a></div></div></details><details class="library-card" id="bond-arcaneShip" tabindex="-1" data-library-id="bond-arcaneShip" data-library-kind="minor" data-library-search="奥术 小盟约 在场至少 2 名【奥术】干员 【奥术】干员造成伤害时，额外附加一次一定攻击力的法术伤害（受层数影响）
 &lt;在场3名不同【奥术】干员&gt;场上所有敌人每次受到伤害时法术抗性降低（上限受层数影响）；【奥术】干员攻击范围内敌人的隐匿效果失效"><summary class="library-card-summary"><img class="bond-icon" src="./assets/c739e66760ec99cb6bf0.png" width="32" height="32" alt="" decoding="async" loading="lazy"><span class="library-card-title" data-related-bond="奥术"><strong>奥术</strong><small>在场至少 2 名成员</small></span></summary><div class="library-card-body"><p class="library-card-meta">激活条件 · 在场至少 2 名【奥术】干员</p><p class="game-copy" data-library-copy>【奥术】干员造成伤害时，额外附加一次一定攻击力的法术伤害（受层数影响）
-&lt;在场3名不同【奥术】干员&gt;场上所有敌人每次受到伤害时法术抗性降低（上限受层数影响）；【奥术】干员攻击范围内敌人的隐匿效果失效</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%A5%A5%E6%9C%AF">查成员 ↗</a><a class="inline-link" href="#operators?view=round&amp;bond=%E5%A5%A5%E6%9C%AF">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-arcaneShip">转盟配方 ↗</a></div></div></details></div></section></div>
+&lt;在场3名不同【奥术】干员&gt;场上所有敌人每次受到伤害时法术抗性降低（上限受层数影响）；【奥术】干员攻击范围内敌人的隐匿效果失效</p><div class="library-card-links"><a class="inline-link" href="#operators?bond=%E5%A5%A5%E6%9C%AF">查成员 ↗</a><a class="inline-link" href="#round-operators?bond=%E5%A5%A5%E6%9C%AF">查本局可选成员 ↗</a><a class="inline-link" href="#recipe-bond-arcaneShip">转盟配方 ↗</a></div></div></details></div></section></div>
       <p class="empty" data-library-empty hidden>没有符合条件的记录。</p>
     </section>
       <section id="operators" class="supplement" aria-labelledby="operators-title">
         <div class="section-top"><span class="section-tab" aria-hidden="true">04</span><h2 id="operators-title" tabindex="-1">干员速查</h2></div>
-        <p class="intro" id="operator-intro">共 143 张干员卡，含 2 张策略专属卡。</p>
-        <div id="operator-views" class="stage-control" role="group" aria-label="干员名单范围" hidden>
-          <button type="button" data-operator-view="all" aria-pressed="true">全部干员</button>
-          <button type="button" data-operator-view="round" aria-pressed="false">本局可选</button>
-        </div>
-        <div id="teams" hidden>
-          <p class="intro"><a class="inline-link" href="#team-ban-panel">设置本局 Ban ↗</a></p>
-          <details class="team-settings" id="team-diy">
-            <summary>自选编队 <span id="team-diy-count"></span></summary>
-            <p class="intro">可选已招募的六星干员和系统原型干员，Ⅴ、Ⅵ 阶本局各最多两名。</p>
-            <div id="team-diy-slots"></div>
-            <p id="team-diy-status" role="status"></p>
-          </details>
-        </div>
-        <div id="operator-toolbar" class="toolbar" hidden>
+        <p class="intro" id="operator-intro">共 143 张干员卡，含 2 张策略专属卡。 <a class="inline-link" href="#round-operators">查本局可选干员 ↗</a></p>
+        <div id="operator-toolbar" class="toolbar operator-toolbar" hidden>
           <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="operator-search" type="search" placeholder="搜干员、技能" aria-label="搜索干员、盟约、特质、技能" autocomplete="off"></label>
           <details id="operator-bond" class="operator-bond-filter">
             <summary>大盟约</summary><div class="operator-bond-options" role="group" aria-label="大盟约多选"></div>
@@ -1151,12 +1136,11 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
             <label><input type="radio" name="operator-tier" value="special"><span>策略专属</span></label>
           </fieldset>
         </div>
-        <div class="directory-status">
+        <div id="operator-status" class="directory-status">
           <p id="operator-count" class="result-count" role="status" hidden></p>
-          <p id="team-count" class="result-count" role="status" hidden></p>
           <div class="directory-filters" role="group" aria-label="已选筛选">
             <span id="operator-bond-chips"></span>
-            <button type="button" id="clear-tier" hidden></button>
+            <button type="button" id="operator-clear-tier" hidden></button>
           </div>
         </div>
         <div id="operator-directory" class="operator-directory"><a class="operator" href="#operator?name=%E6%8A%98%E6%A1%A0" data-operator="折桠" data-operator-label="折桠" data-operator-role="持续叠加" data-tier="1"><img class="operator-tier-mark" src="./assets/3ff5fb90057a01635d79.webp" width="28" height="28" alt="Ⅰ 阶" decoding="async" loading="lazy"><span class="portrait-frame"><img class="portrait" src="./assets/186619c28afb8f64f603.webp" width="48" height="48" alt="" decoding="async" loading="lazy"></span><span class="operator-name">折桠</span><span class="operator-role">持续叠加</span><span class="operator-bonds"><span title="乌萨斯"><img class="bond-icon" src="./assets/bafc5ebbcec4d550a93d.png" width="16" height="16" alt="" decoding="async" loading="lazy"><span class="sr-only">乌萨斯</span></span><span title="不屈"><img class="bond-icon" src="./assets/cf6a946e2128b8804cd6.png" width="16" height="16" alt="" decoding="async" loading="lazy"><span class="sr-only">不屈</span></span></span><span class="operator-bond-label">乌萨斯 · 不屈</span></a>
@@ -1302,16 +1286,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
 <a class="operator" href="#operator?name=%E5%B8%95%E6%8B%89%E6%96%AF" data-operator="帕拉斯" data-operator-label="帕拉斯" data-operator-role="持续叠加" data-tier="6"><img class="operator-tier-mark" src="./assets/f31d0e994cb539f35a85.webp" width="28" height="28" alt="Ⅵ 阶" decoding="async" loading="lazy"><span class="portrait-frame"><img class="portrait" src="./assets/dd90c9b85fc9da7c4de4.webp" width="48" height="48" alt="" decoding="async" loading="lazy"></span><span class="operator-name">帕拉斯</span><span class="operator-role">持续叠加</span><span class="operator-bonds"><span title="灵巧"><img class="bond-icon" src="./assets/c97e9707059266727211.png" width="16" height="16" alt="" decoding="async" loading="lazy"><span class="sr-only">灵巧</span></span><span title="助力"><img class="bond-icon" src="./assets/4157b95656adb79e8bcd.png" width="16" height="16" alt="" decoding="async" loading="lazy"><span class="sr-only">助力</span></span></span><span class="operator-bond-label">灵巧 · 助力</span></a>
 <a class="operator" href="#operator?name=%E7%9B%9F%E7%BA%A6%C2%B7%E8%BE%85%E5%8A%A9%E5%B9%B2%E5%91%98" data-operator="盟约·辅助干员" data-operator-label="盟约·辅助干员" data-operator-role="策略专属 · 作战能力" data-tier="3"><img class="operator-tier-mark" src="./assets/7efaa55626e7977f4800.webp" width="28" height="28" alt="Ⅲ 阶" decoding="async" loading="lazy"><span class="portrait-frame"><img class="portrait" src="./assets/e450352369bb7620d9e9.webp" width="48" height="48" alt="" decoding="async" loading="lazy"></span><span class="operator-name">盟约·辅助干员</span><span class="operator-role">策略专属 · 作战能力</span><span class="operator-bonds"><span title="调和"><img class="bond-icon" src="./assets/a334a719f0d01ac8f1e9.png" width="16" height="16" alt="" decoding="async" loading="lazy"><span class="sr-only">调和</span></span></span><span class="operator-bond-label">调和</span></a>
 <a class="operator" href="#operator?name=%E2%80%9C%E6%9A%B4%E8%BA%81%E9%93%81%E7%9A%AE%E2%80%9D" data-operator="“暴躁铁皮”" data-operator-label="“暴躁铁皮”" data-operator-role="策略专属 · 作战能力" data-tier="5"><img class="operator-tier-mark" src="./assets/91435adab76735a7f392.webp" width="28" height="28" alt="Ⅴ 阶" decoding="async" loading="lazy"><span class="portrait-frame"><img class="portrait" src="./assets/567b5652985253bddacc.webp" width="48" height="48" alt="" decoding="async" loading="lazy"></span><span class="operator-name">“暴躁铁皮”</span><span class="operator-role">策略专属 · 作战能力</span><span class="operator-bonds"><span title="协防干员"><img class="bond-icon" src="./assets/e95ec4d17a9f03a60261.png" width="16" height="16" alt="" decoding="async" loading="lazy"><span class="sr-only">协防干员</span></span></span><span class="operator-bond-label">协防干员</span></a></div>
-        <div id="round-results" hidden>
-          <div class="team-list-head" id="team-results" tabindex="-1">
-            <h3>干员名单</h3>
-
-          </div>
-
-          <div class="team-pool"><div class="team-pool-group" data-pool="all"><section class="team-tier" data-tier="1"><h3><img class="tier-filter-icon" src="./assets/3ff5fb90057a01635d79.webp" width="22" height="22" alt="Ⅰ" decoding="async" loading="lazy">阶 <span>19 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="2"><h3><img class="tier-filter-icon" src="./assets/e554c9100ada6f364ea6.webp" width="22" height="22" alt="Ⅱ" decoding="async" loading="lazy">阶 <span>24 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="3"><h3><img class="tier-filter-icon" src="./assets/7efaa55626e7977f4800.webp" width="22" height="22" alt="Ⅲ" decoding="async" loading="lazy">阶 <span>26 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="4"><h3><img class="tier-filter-icon" src="./assets/88761a78e3054efdc445.webp" width="22" height="22" alt="Ⅳ" decoding="async" loading="lazy">阶 <span>27 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="5"><h3><img class="tier-filter-icon" src="./assets/91435adab76735a7f392.webp" width="22" height="22" alt="Ⅴ" decoding="async" loading="lazy">阶 <span>25 名</span></h3><div class="operator-directory"></div></section><section class="team-tier" data-tier="6"><h3><img class="tier-filter-icon" src="./assets/f31d0e994cb539f35a85.webp" width="22" height="22" alt="Ⅵ" decoding="async" loading="lazy">阶 <span>20 名</span></h3><div class="operator-directory"></div></section></div>
-          </div>
-        </div>
-        <div id="operator-empty" class="empty" hidden><span id="operator-empty-text">没有符合条件的干员。</span><button id="operator-reset" type="button">清空筛选</button></div>
+        <div id="operator-empty" class="empty" hidden><span>没有符合条件的干员。</span><button id="operator-reset" type="button">清空筛选</button></div>
       </section>
       <section id="equipment" class="supplement" aria-labelledby="equipment-title">
         <div class="section-top"><span class="section-tab" aria-hidden="true">05</span><h2 id="equipment-title">装备速查</h2></div>
@@ -1477,7 +1452,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
 <script src="./skland-lineups-data.js"></script>
 <script src="./skland-feed.js"></script>
 <script src="./skland-art.js"></script>
-<script src="./skland-lineups.js"></script>
+<script src="./skland-lineups.js?v=round-quick-view"></script>
 <script>
 (() => {
   const themeToggle = document.getElementById('theme-toggle');
@@ -1503,7 +1478,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     const active = sectionHash();
     const section = document.getElementById(active.slice(1))?.closest('.main-content > section');
     let current = section ? '#' + section.id : '';
-    if (active === '#operator') current = '#operators';
+    if (active === '#operator') current = history.state?.archiveSection ?? '#operators';
     else if (/^#skland-\d+$/.test(active)) current = '#skland-lineups';
     for (const tab of tabs) {
       if (tab.hash === current) tab.setAttribute('aria-current', 'location');
@@ -1514,8 +1489,12 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
   document.addEventListener('keydown', (event) => {
     if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey ||
         event.target.closest('input, textarea, select, [contenteditable], dialog')) return;
-    const active = document.getElementById(sectionHash().slice(1))?.closest('.main-content > section');
-    const search = active?.querySelector('input[type="search"]');
+    const target = document.getElementById(sectionHash().slice(1));
+    const active = target?.closest('.main-content > section');
+    const visibleSearch = (scope) => Array.from(scope?.querySelectorAll('input[type="search"]') ?? [])
+      .find((input) => input.getClientRects().length);
+    const search = visibleSearch(event.target.closest('#round-operators') ?? target?.closest('#round-operators'))
+      ?? visibleSearch(active);
     if (search) {
       event.preventDefault();
       search.focus();
@@ -1617,10 +1596,9 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     const counts = new Map();
     const excluded = { bond: 0, manual: 0 };
     let availableTotal = 0;
-    for (const { card, link, info, entry, keywords } of directory) {
-      if (entry.special) continue;
+    for (const { roundCard: card, link, entry, keywords } of directory) {
+      if (!card) continue;
       const { grid } = teamTiers.get(link.dataset.tier);
-      if (card.parentElement !== grid) grid.append(card);
       const reason = blockReason(link.dataset.operator, entry.bonds, banned);
       const matched = matchesFilter(entry, keywords);
       card.hidden = Boolean(reason) || !matched;
@@ -1628,7 +1606,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
       else if (matched) excluded[reason.kind] += 1;
       if (!card.hidden) {
         counts.set(grid, (counts.get(grid) ?? 0) + 1);
-        updateRoundAffiliations(info, entry.bonds, banned);
+        updateRoundAffiliations(card.querySelector('.operator-directory-info'), entry.bonds, banned);
       }
     }
     let shownAvailable = 0;
@@ -1671,12 +1649,13 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     if (shownDiyAvailable) details.push('含自选 ' + shownDiyAvailable + ' 名');
     if (shownDiyBlocked) details.push('含不可用自选 ' + shownDiyBlocked + ' 名');
     const shownTotal = shownAvailable + shownDiyBlocked;
-    document.getElementById('team-count').textContent = '本局可用 ' + availableTotal + ' 名 · 当前显示 ' + shownTotal + ' 名' +
+    document.getElementById('round-available-count').textContent = availableTotal + ' 名可用';
+    document.getElementById('round-operator-count').textContent = '本局可用 ' + availableTotal + ' 名 · 当前显示 ' + shownTotal + ' 名' +
       (details.length ? ' · ' + details.join(' · ') : '');
-    operatorEmpty.hidden = shownTotal > 0;
+    roundOperatorEmpty.hidden = shownTotal > 0;
     if (!shownTotal) {
       const reasons = excludedCounts(excluded);
-      document.getElementById('operator-empty-text').textContent = reasons
+      roundOperatorEmpty.querySelector('span').textContent = reasons
         ? '当前筛选命中的干员在本局不可用（' + reasons + '）。'
         : '当前筛选没有匹配的干员。';
     }
@@ -1695,7 +1674,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
 
   function updateTeamPool() {
     const banned = bannedBonds();
-    if (roundView) filterDirectory();
+    roundFilters.apply();
     updateBanBadges(banned);
     const roundDiy = Array.from(diyTiers.values()).flatMap(({ selected }) => [...selected]);
     skland?.updateBans(banned, blockedOperators, roundDiy);
@@ -1749,9 +1728,9 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
   function persistRound(banned = bannedBonds()) {
     try {
       sessionStorage.setItem(sessionKey, JSON.stringify({
+        ...savedRound,
         bans: Array.from(banned), blocked: Array.from(blockedOperators),
         diy: Object.fromEntries(Array.from(diyTiers, ([tier, { selected }]) => [tier, Array.from(selected)])),
-        plan: skland?.getPlan(),
       }));
     } catch {
       // Keep the current round usable when storage is unavailable.
@@ -1799,7 +1778,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     }
     blockSelect.value = '';
     diyStatus.textContent = '';
-    skland?.resetPlan();
+    savedRound = null;
     updateTeamPool();
   });
   blockForm.addEventListener('submit', (event) => {
@@ -1828,57 +1807,7 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     }
   }
   const dialog = document.getElementById('skill-dialog');
-  const operatorLinks = document.querySelectorAll('a[href^="#operator?"]');
-  const directorySection = document.getElementById('operators');
   const directoryTitle = document.getElementById('operators-title');
-  const operatorSearch = document.getElementById('operator-search');
-  const bondChips = document.getElementById('operator-bond-chips');
-  const allianceFilters = [
-    ['bond', '大盟约', mode.core, document.getElementById('operator-bond')],
-    ['minor', '小盟约', mode.extra, document.getElementById('operator-minor')],
-  ].map(([key, label, icons, panel]) => {
-    const summary = panel.querySelector('summary');
-    const options = panel.querySelector('.operator-bond-options');
-    const entries = Object.entries(icons).map(([name, src]) => {
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = name;
-      const option = element('label', '', '');
-      option.append(checkbox, modeIcon(src, 16), element('span', '', name));
-      options.append(option);
-      const chip = element('button', '', name + ' ×');
-      chip.type = 'button';
-      chip.hidden = true;
-      chip.setAttribute('aria-label', '移除筛选 ' + name);
-      chip.addEventListener('click', () => {
-        checkbox.checked = false;
-        summary.focus();
-        updateDirectoryUrl();
-      });
-      bondChips.append(chip);
-      return { checkbox, chip };
-    });
-    panel.addEventListener('change', () => updateDirectoryUrl());
-    panel.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && panel.open) {
-        event.stopPropagation();
-        panel.open = false;
-        summary.focus();
-      }
-    });
-    return { key, label, panel, summary, entries };
-  });
-  const tierFilter = document.getElementById('operator-tier');
-  const tierInputs = new Map(Array.from(tierFilter.querySelectorAll('input'), (input) => [input.value, input]));
-  const clearTier = document.getElementById('clear-tier');
-  const operatorCount = document.getElementById('operator-count');
-  const operatorEmpty = document.getElementById('operator-empty');
-  const operatorViews = document.getElementById('operator-views');
-  const roundOptions = document.getElementById('teams');
-  const roundResults = document.getElementById('round-results');
-  const directoryGrid = document.getElementById('operator-directory');
-  const specialTier = tierInputs.get('special');
-  let roundView = false;
   const directory = Array.from(document.querySelectorAll('#operator-directory [data-operator]'), (link) => {
     const entry = mode.operators[link.dataset.operator];
     const card = element('div', 'operator-directory-card', '');
@@ -1888,129 +1817,168 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     info.append(...link.querySelectorAll(':scope > :is(.operator-name, .operator-role, .operator-bonds, .operator-bond-label)'));
     link.setAttribute('aria-label', link.dataset.operatorLabel || link.dataset.operator);
     card.append(link, info);
+    let roundCard;
+    if (!entry.special) {
+      roundCard = card.cloneNode(true);
+      teamTiers.get(link.dataset.tier).grid.append(roundCard);
+    }
     return {
-      card, link, info, entry,
+      card, roundCard, link, entry,
       keywords: normalize([link.dataset.operator, link.dataset.operatorLabel, entry.type, entry.backup, ...entry.bonds, ...entry.skills, ...entry.ranks].join(' ')),
     };
   });
   const directoryLinks = new Map(directory.map(({ link }) => [link.dataset.operator, link]));
-
-  function selectedAlliances() {
-    return allianceFilters.map(({ entries }) => entries
-      .filter(({ checkbox }) => checkbox.checked).map(({ checkbox }) => checkbox.value));
+  const operatorLinks = document.querySelectorAll('a[href^="#operator?"]');
+  const operatorCount = document.getElementById('operator-count');
+  const operatorEmpty = document.getElementById('operator-empty');
+  const roundPanel = document.getElementById('round-operators');
+  const roundControls = document.getElementById('round-operator-controls');
+  for (const id of ['operator-toolbar', 'operator-status', 'operator-empty']) {
+    const control = document.getElementById(id).cloneNode(true);
+    control.id = 'round-' + id;
+    for (const child of control.querySelectorAll('[id], [name]')) {
+      if (child.id) child.id = 'round-' + child.id;
+      if (child.hasAttribute('name')) child.name = 'round-' + child.name;
+    }
+    control.querySelector('label:has(input[value="special"])')?.remove();
+    (id === 'operator-empty' ? document.getElementById('round-results') : roundControls).append(control);
   }
+  const roundOperatorEmpty = document.getElementById('round-operator-empty');
 
-  function setAllianceFilters(names) {
-    const selected = new Set(names);
-    for (const { entries } of allianceFilters) {
-      for (const { checkbox } of entries) checkbox.checked = selected.has(checkbox.value);
-    }
-  }
-
-  function filterDirectory() {
-    const terms = normalize(operatorSearch.value).split(/\s+/).filter(Boolean);
-    const alliances = selectedAlliances();
-    const tier = tierFilter.querySelector(':checked').value;
-    const matchesFilter = (entry, keywords) =>
-      (!tier || (tier === 'special' ? entry.special : entry.tier === Number(tier))) &&
-      terms.every((term) => keywords.includes(term)) &&
-      alliances.every(group => !group.length || group.some(bond => entry.bonds.includes(bond)));
-    if (roundView) {
-      renderTeamCards(bannedBonds(), matchesFilter);
-    } else {
-      let matches = 0;
-      for (const { card, entry, keywords } of directory) {
-        card.hidden = !matchesFilter(entry, keywords);
-        if (!card.hidden) matches += 1;
-      }
-      operatorCount.textContent = matches + ' 名干员';
-      operatorEmpty.hidden = matches > 0;
-      document.getElementById('operator-empty-text').textContent = '没有符合条件的干员。';
-    }
-    for (const [index, { label, summary, entries }] of allianceFilters.entries()) {
-      const count = alliances[index].length;
-      summary.textContent = label + (count ? ' · ' + count : '');
-      for (const { checkbox, chip } of entries) chip.hidden = !checkbox.checked;
-    }
-    const tierLabel = tier === 'special' ? '策略专属' : tier && 'ⅠⅡⅢⅣⅤⅥ'[Number(tier) - 1] + ' 阶';
-    setFilterLabel(clearTier, tierLabel);
-  }
-
-  function setFilterLabel(button, label) {
-    button.hidden = !label;
-    button.textContent = label ? label + ' ×' : '';
-    button.setAttribute('aria-label', '移除筛选 ' + label);
-  }
-
-  function setDirectoryView(inRound) {
-    if (!inRound && roundView) directoryGrid.append(...directory.map(({ card }) => card));
-    roundView = inRound;
-    roundOptions.hidden = !inRound;
-    roundResults.hidden = !inRound;
-    directoryGrid.hidden = inRound;
-    document.getElementById('operator-intro').hidden = inRound;
-    operatorCount.hidden = inRound;
-    document.getElementById('team-count').hidden = !inRound;
-    specialTier.parentElement.hidden = inRound;
-    if (inRound && specialTier.checked) tierInputs.get('').checked = true;
-    for (const button of operatorViews.querySelectorAll('button')) {
-      button.setAttribute('aria-pressed', String((button.dataset.operatorView === 'round') === inRound));
-    }
-  }
-
-  function updateDirectoryUrl(push = false) {
-    const params = new URLSearchParams();
-    const tier = tierFilter.querySelector(':checked').value;
-    if (roundView) params.set('view', 'round');
-    for (const [index, names] of selectedAlliances().entries()) {
-      for (const name of names) params.append(allianceFilters[index].key, name);
-    }
-    if (tier) params.set('tier', tier);
-    const nextHash = params.size ? '#operators?' + params : '#operators';
-    if (nextHash !== location.hash) {
-      if (push) pushEntry(nextHash);
-      else history.replaceState(history.state, '', nextHash);
-    }
-    filterDirectory();
-    highlightIndex();
-    rememberEntry();
-  }
-
-  document.addEventListener('click', (event) => {
-    for (const { panel } of allianceFilters) {
-      if (!panel.contains(event.target)) panel.open = false;
-    }
-  });
-  operatorSearch.addEventListener('input', filterDirectory);
-  tierFilter.addEventListener('change', () => updateDirectoryUrl());
-  clearTier.addEventListener('click', () => {
-    tierInputs.get('').checked = true;
-    updateDirectoryUrl();
-    tierInputs.get('').focus();
-  });
-  document.getElementById('operator-reset').addEventListener('click', () => {
-    operatorSearch.value = '';
-    setAllianceFilters([]);
-    tierInputs.get('').checked = true;
-    updateDirectoryUrl();
-    operatorSearch.focus();
-  });
-  for (const button of operatorViews.querySelectorAll('button')) {
-    button.addEventListener('click', () => {
-      const next = button.dataset.operatorView === 'round';
-      if (next === roundView) return;
-      rememberEntry();
-      setDirectoryView(next);
-      updateDirectoryUrl(true);
+  function mountOperatorFilters(prefix, hash, render) {
+    const operatorSearch = document.getElementById(prefix + '-search');
+    const bondChips = document.getElementById(prefix + '-bond-chips');
+    const allianceFilters = [
+      ['bond', '大盟约', mode.core, document.getElementById(prefix + '-bond')],
+      ['minor', '小盟约', mode.extra, document.getElementById(prefix + '-minor')],
+    ].map(([key, label, icons, panel]) => {
+      const summary = panel.querySelector('summary');
+      const options = panel.querySelector('.operator-bond-options');
+      const entries = Object.entries(icons).map(([name, src]) => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = name;
+        const option = element('label', '', '');
+        option.append(checkbox, modeIcon(src, 16), element('span', '', name));
+        options.append(option);
+        const chip = element('button', '', name + ' ×');
+        chip.type = 'button';
+        chip.hidden = true;
+        chip.setAttribute('aria-label', '移除筛选 ' + name);
+        chip.addEventListener('click', () => {
+          checkbox.checked = false;
+          summary.focus();
+          updateDirectoryUrl();
+        });
+        bondChips.append(chip);
+        return { checkbox, chip };
+      });
+      panel.addEventListener('change', () => updateDirectoryUrl());
+      panel.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && panel.open) {
+          event.stopPropagation();
+          panel.open = false;
+          summary.focus();
+        }
+      });
+      return { key, label, panel, summary, entries };
     });
+    const tierFilter = document.getElementById(prefix + '-tier');
+    const tierInputs = new Map(Array.from(tierFilter.querySelectorAll('input'), (input) => [input.value, input]));
+    const clearTier = document.getElementById(prefix + '-clear-tier');
+
+    function selectedAlliances() {
+      return allianceFilters.map(({ entries }) => entries
+        .filter(({ checkbox }) => checkbox.checked).map(({ checkbox }) => checkbox.value));
+    }
+
+    function read() {
+      return {
+        query: operatorSearch.value,
+        alliances: selectedAlliances().flat(),
+        tier: tierFilter.querySelector(':checked').value,
+      };
+    }
+
+    function restore({ query = '', alliances = [], tier = '' } = {}) {
+      operatorSearch.value = query;
+      const selected = new Set(alliances);
+      for (const { entries } of allianceFilters) {
+        for (const { checkbox } of entries) checkbox.checked = selected.has(checkbox.value);
+      }
+      (tierInputs.get(tier) ?? tierInputs.get('')).checked = true;
+    }
+
+    function apply() {
+      const terms = normalize(operatorSearch.value).split(/\s+/).filter(Boolean);
+      const alliances = selectedAlliances();
+      const tier = tierFilter.querySelector(':checked').value;
+      render((entry, keywords) =>
+        (!tier || (tier === 'special' ? entry.special : entry.tier === Number(tier))) &&
+        terms.every((term) => keywords.includes(term)) &&
+        alliances.every(group => !group.length || group.some(bond => entry.bonds.includes(bond))));
+      for (const [index, { label, summary, entries }] of allianceFilters.entries()) {
+        const count = alliances[index].length;
+        summary.textContent = label + (count ? ' · ' + count : '');
+        for (const { checkbox, chip } of entries) chip.hidden = !checkbox.checked;
+      }
+      const tierLabel = tier === 'special' ? '策略专属' : tier && 'ⅠⅡⅢⅣⅤⅥ'[Number(tier) - 1] + ' 阶';
+      clearTier.hidden = !tierLabel;
+      clearTier.textContent = tierLabel ? tierLabel + ' ×' : '';
+      clearTier.setAttribute('aria-label', '移除筛选 ' + tierLabel);
+    }
+
+    function updateDirectoryUrl() {
+      const params = new URLSearchParams();
+      const tier = tierFilter.querySelector(':checked').value;
+      for (const [index, names] of selectedAlliances().entries()) {
+        for (const name of names) params.append(allianceFilters[index].key, name);
+      }
+      if (tier) params.set('tier', tier);
+      const nextHash = params.size ? hash + '?' + params : hash;
+      if (nextHash !== location.hash) history.replaceState(history.state, '', nextHash);
+      apply();
+      highlightIndex();
+      rememberEntry();
+    }
+
+    document.addEventListener('click', (event) => {
+      for (const { panel } of allianceFilters) {
+        if (!panel.contains(event.target)) panel.open = false;
+      }
+    });
+    operatorSearch.addEventListener('input', apply);
+    tierFilter.addEventListener('change', updateDirectoryUrl);
+    clearTier.addEventListener('click', () => {
+      tierInputs.get('').checked = true;
+      updateDirectoryUrl();
+      tierInputs.get('').focus();
+    });
+    document.getElementById(prefix + '-reset').addEventListener('click', () => {
+      restore();
+      updateDirectoryUrl();
+      operatorSearch.focus();
+    });
+    document.getElementById(prefix + '-toolbar').hidden = false;
+    document.getElementById(prefix + '-count').hidden = false;
+    return { read, restore, apply };
   }
-  document.getElementById('operator-toolbar').hidden = false;
-  operatorViews.hidden = false;
-  operatorCount.hidden = false;
+
+  const operatorFilters = mountOperatorFilters('operator', '#operators', (matchesFilter) => {
+    let matches = 0;
+    for (const { card, entry, keywords } of directory) {
+      card.hidden = !matchesFilter(entry, keywords);
+      if (!card.hidden) matches += 1;
+    }
+    operatorCount.textContent = matches + ' 名干员';
+    operatorEmpty.hidden = matches > 0;
+  });
+  const roundFilters = mountOperatorFilters('round-operator', '#round-operators',
+    (matchesFilter) => renderTeamCards(bannedBonds(), matchesFilter));
+  roundPanel.hidden = false;
   const previewUI = window.strongholdPreviewUI;
   const skland = window.mountStrongholdSkland?.({
-    mode, blockReason, linkTo, directoryLinks, teamNames, operatorPreviewContent, previewUI,
-    savedPlan: savedRound?.plan, onPlanChange: persistRound,
+    mode, blockReason, linkTo, directoryLinks, operatorPreviewContent, previewUI,
     beforePreviewOpen: () => {
       if (dialog.open) return false;
       hidePreview(true);
@@ -2018,13 +1986,16 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     },
   });
   if (skland) {
-    for (const { link, info, entry } of directory) {
-      const options = skland.directoryConfiguration(link.dataset.operator, entry);
-      if (options.childElementCount) info.before(options);
+    for (const { card, roundCard, link, entry } of directory) {
+      const name = link.dataset.operator;
+      for (const view of roundCard ? [card, roundCard] : [card]) {
+        const options = skland.directoryConfiguration(name, entry);
+        if (options.childElementCount) view.querySelector('.operator-directory-info').before(options);
+      }
     }
   }
   updateTeamPool();
-  filterDirectory();
+  operatorFilters.apply();
 
   const equipmentSearch = document.getElementById('equipment-search');
   const equipmentTier = document.getElementById('equipment-tier');
@@ -2590,9 +2561,9 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     return performance.timeOrigin + ':' + ++entrySequence;
   }
 
-  function pushEntry(hash, openedArchive = false, sklandListBack = 0) {
+  function pushEntry(hash, openedArchive, sklandListBack, archiveSection) {
     activeEntry = newEntryKey();
-    history.pushState({ libraryEntry: activeEntry, openedArchive, sklandListBack }, '', hash);
+    history.pushState({ libraryEntry: activeEntry, openedArchive, sklandListBack, archiveSection }, '', hash);
   }
 
   function rememberEntry(focus = document.activeElement) {
@@ -2602,21 +2573,16 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
       focus,
       lineupTop: focus?.matches('.skland-card-open') ? focus.getBoundingClientRect().top : null,
       archiveTop: dialog.open ? dialog.scrollTop : 0,
-      operators: {
-        query: operatorSearch.value, alliances: selectedAlliances().flat(),
-        tier: tierFilter.querySelector(':checked').value, round: roundView,
-      },
+      operators: operatorFilters.read(),
+      roundOperators: roundFilters.read(),
       equipment: [equipmentSearch.value, equipmentTier.value, equipmentKind.value],
       catalogs: [...libraryFilters.values()].map(({ search, kind }) => [search.value, kind.value]),
     });
   }
 
   function restoreFilters(saved) {
-    const { query, alliances, tier, round } = saved.operators;
-    operatorSearch.value = query;
-    setAllianceFilters(alliances);
-    tierInputs.get(tier).checked = true;
-    setDirectoryView(round);
+    operatorFilters.restore(saved.operators);
+    roundFilters.restore(saved.roundOperators);
     [equipmentSearch.value, equipmentTier.value, equipmentKind.value] = saved.equipment;
     [...libraryFilters.values()].forEach(({ search, kind }, index) => {
       [search.value, kind.value] = saved.catalogs[index];
@@ -2640,11 +2606,17 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     if (legacyFaction) {
       const recipe = document.getElementById('recipe-' + legacyFaction[1]);
       history.replaceState(history.state, '', recipe?.querySelector('.library-bond-link')?.hash ?? '#bonds');
+    } else if (old === 'skland-plan') {
+      history.replaceState(history.state, '', '#skland-lineups');
     } else if (old === 'guide' || old === 'tactics' || old === 'stacking') {
       history.replaceState(history.state, '', old === 'guide' ? '#bonds' : '#rules');
     }
 
     const params = new URLSearchParams(location.hash.split('?')[1]);
+    if (sectionHash() === '#operators' && params.get('view') === 'round') {
+      params.delete('view');
+      history.replaceState(history.state, '', '#round-operators' + (params.size ? '?' + params : ''));
+    }
     const archiveLink = sectionHash() === '#operator' && directoryLinks.get(params.get('name'));
     if (!archiveLink && sectionHash() === '#operator') {
       history.replaceState(history.state, '', '#operators');
@@ -2661,20 +2633,16 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
       filter(target?.matches('.library-card') && section.contains(target) ? target : null);
     }
 
-    if (active === '#operators' || active === '#teams' || active === '#team-results') {
-      if (!saved && !preserveInputs) {
-        if (active !== '#team-results') {
-          operatorSearch.value = '';
-          setAllianceFilters([...params.getAll('bond'), ...params.getAll('minor'), ...params.getAll('core')]);
-          (tierInputs.get(params.get('tier')) ?? tierInputs.get('')).checked = true;
-        }
-        setDirectoryView(active !== '#operators' || params.get('view') === 'round');
-      }
-      if (active === '#teams' || params.has('core')) updateDirectoryUrl();
-      else filterDirectory();
-    } else if (saved) {
-      filterDirectory();
+    const filters = active === '#operators' ? operatorFilters
+      : roundPanel.contains(target) ? roundFilters : null;
+    if (filters && !saved && !preserveInputs && active !== '#team-results') {
+      filters.restore({
+        alliances: [...params.getAll('bond'), ...params.getAll('minor'), ...params.getAll('core')],
+        tier: params.get('tier'),
+      });
     }
+    if (saved || filters === operatorFilters) operatorFilters.apply();
+    if (saved || filters === roundFilters) roundFilters.apply();
 
     if (archiveLink) {
       openArchive(archiveLink, entryPoint);
@@ -2684,10 +2652,9 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
         panel.open = true;
       }
       if (!saved) {
-        const destination = active === '#teams' ? directorySection : target;
-        const focus = destination === directorySection ? directoryTitle : destination;
+        const focus = active === '#operators' ? directoryTitle : target;
         if (focus.tabIndex >= 0 || focus.hasAttribute('tabindex')) focus.focus({ preventScroll: true });
-        destination.scrollIntoView({ behavior: 'instant' });
+        target.scrollIntoView({ behavior: 'instant' });
       }
     }
 
@@ -2746,7 +2713,9 @@ h1, h1 span, .section-top h2, .skill-header h2 { letter-spacing: normal; }
     const toDetailBans = link.hash.startsWith('#team-ban-panel?lineup=') &&
       link.hash.split('=')[1] === sectionHash().slice('#skland-'.length);
     const listBack = fromCard ? 1 : toDetailBans && history.state?.sklandListBack ? history.state.sklandListBack + 1 : 0;
-    pushEntry(link.hash, openedArchive, listBack);
+    const archiveSection = openedArchive && roundPanel.contains(popupOrigin?.focus ?? link)
+      ? '#skland-lineups' : undefined;
+    pushEntry(link.hash, openedArchive, listBack, archiveSection);
     syncRoute({ entryPoint, animate: true });
   });
   document.addEventListener('input', () => rememberEntry());
